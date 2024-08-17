@@ -85,7 +85,7 @@ const EmblaCarousel = ({ slides }: EmblaCarouselProps) => {
 								/>
 							))}
 						</div>
-						<GdscFooter className="text-light cursor-pointer w-1/3 flex justify-center lg:text-xl" />
+						<GdscFooter className="cursor-pointer w-1/3 flex justify-center" />
 					</div>
 				</div>
 			</div>

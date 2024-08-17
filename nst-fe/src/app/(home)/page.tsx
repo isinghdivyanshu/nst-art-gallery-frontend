@@ -26,7 +26,7 @@ export default function Hero() {
 					<ViewSomething text="View Gallery" className="mt-14" />
 				</article>
 			</section>
-			<GdscFooter className="absolute bottom-10 right-10 text-xl" />
+			<GdscFooter className="absolute bottom-10 right-10" />
 		</main>
 	);
 }

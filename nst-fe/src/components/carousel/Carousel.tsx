@@ -74,7 +74,7 @@ const EmblaCarousel = ({ slides }: EmblaCarouselProps) => {
 					<div className="carousel_footer bg-[rgba(11,11,11,0.7)] backdrop-blur flex justify-around">
 						<ViewSomething
 							text="Use your own style"
-							className="text-light lg:text-xl w-1/3"
+							className="justify-center text-light lg:text-xl w-1/3"
 						/>
 						<div className="embla__dots w-1/3">
 							{scrollSnaps.map((_, index) => (

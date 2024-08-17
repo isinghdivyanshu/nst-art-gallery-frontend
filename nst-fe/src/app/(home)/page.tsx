@@ -9,7 +9,13 @@ export default function Hero() {
 		<main className="relative h-[calc(100vh-4.25rem)] bg-[url('../assets/hero/heroBg.svg')] bg-cover bg-center pl-20 lg:pl-24 pt-24 text-light">
 			<section className="flex justify-center items-center gap-24 lg:gap-56">
 				<aside>
-					<Image src={heroMain} alt="Art" width={400} height={600} />
+					<Image
+						src={heroMain}
+						alt="Art"
+						width={400}
+						height={600}
+						priority
+					/>
 				</aside>
 				<article>
 					<h1 className="text-4xl lg:text-7xl">
@@ -23,7 +29,10 @@ export default function Hero() {
 						className="mt-24"
 						onClick={() => {}}
 					/> */}
-					<ViewSomething text="View Gallery" className="mt-14" />
+					<ViewSomething
+						text="View Gallery"
+						className="mt-14 indent-2"
+					/>
 				</article>
 			</section>
 			<GdscFooter className="absolute bottom-10 right-10" />

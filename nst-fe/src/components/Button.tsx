@@ -1,12 +1,22 @@
 interface ButtonProps {
 	text: string;
-	className: string;
-	onClick: () => void;
+	className?: string;
+	type: "button" | "submit" | "reset";
+	onClick?: () => void;
 }
 
-export default function Button({ text, className, onClick }: ButtonProps) {
+export default function Button({
+	text,
+	className,
+	type,
+	onClick,
+}: ButtonProps) {
 	return (
-		<button className={`py-2 px-5 text-xl rounded-lg bg-soil ${className}`}>
+		<button
+			type={type}
+			className={`py-2 px-5 text-xl rounded-lg bg-soil ${className}`}
+			onClick={onClick}
+		>
 			{text}
 		</button>
 	);

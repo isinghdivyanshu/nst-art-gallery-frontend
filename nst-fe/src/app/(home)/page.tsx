@@ -6,14 +6,14 @@ import GdscFooter from "@/components/GdscFooter";
 
 export default function Hero() {
 	return (
-		<main className="relative h-[calc(100vh-4.25rem)] bg-[url('../assets/hero/heroBg.svg')] bg-cover bg-center pl-20 lg:pl-24 pt-24 text-light">
+		<main className="relative h-[calc(100svh-4.25rem)] bg-[url('../assets/hero/heroBg.svg')] bg-cover bg-center pl-20 lg:pl-24 pt-24 text-light flex justify-center items-center">
 			<section className="flex justify-center items-center gap-24 lg:gap-56">
 				<aside>
 					<Image
 						src={heroMain}
 						alt="Art"
 						width={400}
-						height={600}
+						height={800}
 						priority
 					/>
 				</aside>

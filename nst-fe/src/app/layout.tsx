@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import ContextProvider from "@/providers/contextProvider";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -20,14 +21,13 @@ export default function RootLayout({
 			<body className={outfit.className}>
 				<Toaster
 					position="top-right"
-					theme="dark"
 					duration={3000}
 					richColors
 					closeButton
 					pauseWhenPageIsHidden
 					expand
 				/>
-				{children}
+				<ContextProvider>{children}</ContextProvider>
 			</body>
 		</html>
 	);

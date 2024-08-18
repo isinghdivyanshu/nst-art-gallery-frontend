@@ -14,7 +14,7 @@ export default function Button({
 	return (
 		<button
 			type={type}
-			className={`py-2 px-5 text-xl rounded-lg bg-soil ${className}`}
+			className={`py-2 px-5 text-xl rounded-lg bg-skin ${className}`}
 			onClick={onClick}
 		>
 			{text}

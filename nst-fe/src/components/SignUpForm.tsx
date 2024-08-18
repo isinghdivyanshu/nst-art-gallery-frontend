@@ -3,6 +3,8 @@
 import Input from "./Input";
 import Button from "./Button";
 import Link from "next/link";
+import { handleSignUp } from "@/services/service";
+import { toast } from "sonner";
 
 export default function SignUpForm() {
 	return (
@@ -11,7 +13,7 @@ export default function SignUpForm() {
 				Sign Up
 			</h1>
 			<form
-				onSubmit={handleSignUp}
+				onSubmit={callHandleSignUp}
 				className="w-3/4 flex flex-col gap-5 justify-center items-center mx-auto"
 			>
 				<Input
@@ -63,10 +65,32 @@ export default function SignUpForm() {
 		</>
 	);
 
-	async function handleSignUp(event: React.FormEvent<HTMLFormElement>) {
+	async function callHandleSignUp(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		const formData = new FormData(event.currentTarget);
-		const dataObject = Object.fromEntries(formData.entries());
-		console.log(dataObject);
+		const dataObject = Object.fromEntries(formData.entries()) as {
+			name: string;
+			email: string;
+			password: string;
+			cPassword: string;
+		};
+		const { name, email, password, cPassword } = dataObject;
+
+		if (password != cPassword) {
+			toast.error("Passwords do not match");
+			return;
+		}
+
+		const res = await handleSignUp({ name, email, password });
+
+		if (!res?.error) {
+			toast.success(res?.message);
+			console.log(res?.response);
+		}
+
+		if (res?.error) {
+			toast.error(res.message);
+			console.log(res.message);
+		}
 	}
 }

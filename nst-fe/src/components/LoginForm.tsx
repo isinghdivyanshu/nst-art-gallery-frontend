@@ -3,6 +3,8 @@
 import Input from "./Input";
 import Button from "./Button";
 import Link from "next/link";
+import { handleLogin } from "@/services/service";
+import { toast } from "sonner";
 
 export default function LoginForm() {
 	return (
@@ -11,7 +13,7 @@ export default function LoginForm() {
 				Log In
 			</h1>
 			<form
-				onSubmit={handleLogin}
+				onSubmit={callHandleLogin}
 				className="w-3/4 flex flex-col gap-5 justify-center items-center mx-auto"
 			>
 				<Input
@@ -31,7 +33,7 @@ export default function LoginForm() {
 					groupClassName="w-full"
 				/>
 				<Link
-					href={"/reset-password"}
+					href={"/otp-verification"}
 					className="text-sm hover:underline cursor-pointer text-soil self-end"
 				>
 					Forgot password?
@@ -53,10 +55,25 @@ export default function LoginForm() {
 		</>
 	);
 
-	async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+	async function callHandleLogin(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		const formData = new FormData(event.currentTarget);
-		const dataObject = Object.fromEntries(formData.entries());
-		console.log(dataObject);
+		const dataObject = Object.fromEntries(formData.entries()) as {
+			email: string;
+			password: string;
+		};
+		const { email, password } = dataObject;
+
+		const res = await handleLogin({ email, password });
+
+		if (!res?.error) {
+			toast.success(res?.message);
+			console.log(res?.response);
+		}
+
+		if (res?.error) {
+			toast.error(res.message);
+			console.log(res.message);
+		}
 	}
 }

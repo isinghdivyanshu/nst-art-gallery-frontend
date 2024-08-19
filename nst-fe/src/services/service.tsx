@@ -4,7 +4,8 @@
 interface fetchEndpointProps {
 	endPoint: string;
 	method: "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
-	header: boolean;
+	auth?: true;
+	addHeader?: { [key: string]: string };
 	reqBody?: object;
 	token?: string | null;
 }
@@ -12,7 +13,8 @@ interface fetchEndpointProps {
 export async function fetchEndpoint({
 	endPoint,
 	method,
-	header,
+	auth,
+	addHeader,
 	reqBody,
 	token,
 }: fetchEndpointProps) {
@@ -23,12 +25,16 @@ export async function fetchEndpoint({
 	console.log("\n\n[URL] -->", URL);
 	console.log("[TIME] -->", new Date().toLocaleTimeString());
 
-	let headers = header
+	let headers = auth
 		? {
 				"Content-Type": "application/json",
 				Authorization: `Bearer ${token}`,
 		  }
 		: { "Content-Type": "application/json" };
+	headers = {
+		...headers,
+		...addHeader,
+	};
 
 	let body = reqBody ? JSON.stringify(reqBody) : undefined;
 
@@ -86,7 +92,6 @@ export async function handleSignUp({
 	const signUp = await fetchEndpoint({
 		endPoint: "/auth/register",
 		method: "POST",
-		header: false,
 		reqBody: {
 			name: name,
 			email: email,
@@ -106,7 +111,6 @@ export async function handleLogin({ email, password }: handleLoginProps) {
 	const login = await fetchEndpoint({
 		endPoint: "/auth/login",
 		method: "POST",
-		header: false,
 		reqBody: {
 			email: email,
 			password: password,
@@ -125,7 +129,6 @@ export async function handleVerify({ email, otp }: handleVerifyProps) {
 	const verify = await fetchEndpoint({
 		endPoint: `/auth/verify?email=${email}&otp=${otp}`,
 		method: "GET",
-		header: false,
 	});
 
 	return verify;
@@ -136,7 +139,6 @@ export async function handleResendOtp(email: string) {
 	const resend = await fetchEndpoint({
 		endPoint: `/auth/request-otp?email=${email}`,
 		method: "GET",
-		header: false,
 	});
 
 	return resend;
@@ -147,7 +149,6 @@ export async function handleResetOtp(email: string) {
 	const otp = await fetchEndpoint({
 		endPoint: `/auth/reset-password?email=${email}`,
 		method: "GET",
-		header: false,
 	});
 
 	return otp;
@@ -167,7 +168,6 @@ export async function handleResetPassword({
 	const reset = await fetchEndpoint({
 		endPoint: "/auth/set-forgotten-password",
 		method: "POST",
-		header: false,
 		reqBody: {
 			email: email,
 			password: password,

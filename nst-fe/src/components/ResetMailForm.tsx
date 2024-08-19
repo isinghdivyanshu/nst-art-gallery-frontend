@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
 import Link from "next/link";
@@ -9,6 +10,7 @@ import { toast } from "sonner";
 import { useStore } from "@/app/store";
 
 export default function ResetMailForm() {
+	const [isPending, setIsPending] = useState<boolean>(false);
 	const router = useRouter();
 	const { setEmail } = useStore();
 	return (
@@ -22,7 +24,9 @@ export default function ResetMailForm() {
 			</h2>
 			<form
 				onSubmit={callHandleResetOtp}
-				className="w-3/4 flex flex-col gap-5 justify-center items-center mx-auto"
+				className={`w-3/4 flex flex-col gap-5 justify-center items-center mx-auto ${
+					isPending ? "cursor-progress" : ""
+				}`}
 			>
 				<Input
 					type="email"
@@ -38,7 +42,7 @@ export default function ResetMailForm() {
 					className="w-1/2 lg:w-1/3 my-14 mx-auto text-darker font-semibold"
 				/>
 			</form>
-			<Link href={"/login"}>
+			<Link href={"/login"} className={`${isPending ? "hidden" : ""}`}>
 				<div className="group flex justify-center cursor-pointer">
 					<span className="inline-block mx-1">
 						Know your password?
@@ -53,6 +57,8 @@ export default function ResetMailForm() {
 
 	async function callHandleResetOtp(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		setIsPending(true);
+
 		const formData = new FormData(event.currentTarget);
 		const dataObject = Object.fromEntries(formData.entries()) as {
 			email: string;
@@ -81,5 +87,7 @@ export default function ResetMailForm() {
 			toast.error(res.message);
 			console.log(res.error);
 		}
+
+		setIsPending(false);
 	}
 }

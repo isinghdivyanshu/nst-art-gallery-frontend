@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
 import Link from "next/link";
@@ -9,6 +10,7 @@ import { toast } from "sonner";
 import { useStore } from "@/app/store";
 
 export default function LoginForm() {
+	const [isPending, setIsPending] = useState<boolean>(false);
 	const router = useRouter();
 	const { setEmail, login } = useStore();
 
@@ -19,7 +21,9 @@ export default function LoginForm() {
 			</h1>
 			<form
 				onSubmit={callHandleLogin}
-				className="w-3/4 flex flex-col gap-5 justify-center items-center mx-auto"
+				className={`w-3/4 flex flex-col gap-5 justify-center items-center mx-auto ${
+					isPending ? "cursor-progress" : ""
+				}`}
 			>
 				<Input
 					type="email"
@@ -47,9 +51,10 @@ export default function LoginForm() {
 					type="submit"
 					text="Log In"
 					className="w-1/2 lg:w-1/3 my-14 mx-auto bg-skin text-darker font-semibold"
+					disabled={isPending}
 				/>
 			</form>
-			<Link href={"/register"}>
+			<Link href={"/register"} className={`${isPending ? "hidden" : ""}`}>
 				<div className="group flex justify-center cursor-pointer">
 					<span className="inline-block mx-1">Not a member?</span>
 					<span className="inline-block mx-1 text-soil group-hover:translate-x-2 transition duration-300">
@@ -62,6 +67,8 @@ export default function LoginForm() {
 
 	async function callHandleLogin(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		setIsPending(true);
+
 		const formData = new FormData(event.currentTarget);
 		const dataObject = Object.fromEntries(formData.entries()) as {
 			email: string;
@@ -94,5 +101,7 @@ export default function LoginForm() {
 			toast.error(res.message);
 			console.log(res.error);
 		}
+
+		setIsPending(false);
 	}
 }

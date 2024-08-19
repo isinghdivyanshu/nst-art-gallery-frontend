@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
 import Link from "next/link";
@@ -9,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function ResetPasswordForm() {
+	const [isPending, setIsPending] = useState<boolean>(false);
 	const router = useRouter();
 	const { email } = useStore() as {
 		email: string;
@@ -24,7 +26,9 @@ export default function ResetPasswordForm() {
 			</h2>
 			<form
 				onSubmit={callHandleResetPassword}
-				className="w-3/4 flex flex-col gap-5 justify-center items-center mx-auto"
+				className={`w-3/4 flex flex-col gap-5 justify-center items-center mx-auto ${
+					isPending ? "cursor-progress" : ""
+				}`}
 			>
 				<Input
 					type="password"
@@ -46,9 +50,10 @@ export default function ResetPasswordForm() {
 					type="submit"
 					text="Reset Password"
 					className="w-1/2 lg:w-1/3 my-14 mx-auto text-darker font-semibold"
+					disabled={isPending}
 				/>
 			</form>
-			<Link href={"/login"}>
+			<Link href={"/login"} className={`${isPending ? "hidden" : ""}`}>
 				<div className="group flex justify-center cursor-pointer">
 					<span className="inline-block mx-1">
 						Know your password??
@@ -65,6 +70,8 @@ export default function ResetPasswordForm() {
 		event: React.FormEvent<HTMLFormElement>
 	) {
 		event.preventDefault();
+		setIsPending(true);
+
 		const formData = new FormData(event.currentTarget);
 		const dataObject = Object.fromEntries(formData.entries()) as {
 			password: string;
@@ -97,5 +104,7 @@ export default function ResetPasswordForm() {
 			toast.error(res.message);
 			console.log(res.error);
 		}
+
+		setIsPending(false);
 	}
 }

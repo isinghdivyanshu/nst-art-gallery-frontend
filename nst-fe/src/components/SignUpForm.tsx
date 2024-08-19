@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export default function SignUpForm() {
+	const [isPending, setIsPending] = useState<boolean>(false);
 	const router = useRouter();
 
 	return (
@@ -17,7 +19,9 @@ export default function SignUpForm() {
 			</h1>
 			<form
 				onSubmit={callHandleSignUp}
-				className="w-3/4 flex flex-col gap-5 justify-center items-center mx-auto"
+				className={`w-3/4 flex flex-col gap-5 justify-center items-center mx-auto ${
+					isPending ? "cursor-progress" : ""
+				}`}
 			>
 				<Input
 					type="text"
@@ -55,9 +59,10 @@ export default function SignUpForm() {
 					type="submit"
 					text="Sign Up"
 					className="w-1/2 lg:w-1/3 my-10 mx-auto bg-skin text-darker font-semibold"
+					disabled={isPending}
 				/>
 			</form>
-			<Link href={"/login"}>
+			<Link href={"/login"} className={`${isPending ? "hidden" : ""}`}>
 				<div className="group flex justify-center cursor-pointer">
 					<span className="inline-block mx-1">Already a member?</span>
 					<span className="inline-block mx-1 text-soil group-hover:translate-x-2 transition duration-300">
@@ -70,6 +75,8 @@ export default function SignUpForm() {
 
 	async function callHandleSignUp(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		setIsPending(true);
+
 		const formData = new FormData(event.currentTarget);
 		const dataObject = Object.fromEntries(formData.entries()) as {
 			name: string;
@@ -97,5 +104,7 @@ export default function SignUpForm() {
 			toast.error(res.message);
 			console.log(res.error);
 		}
+
+		setIsPending(false);
 	}
 }

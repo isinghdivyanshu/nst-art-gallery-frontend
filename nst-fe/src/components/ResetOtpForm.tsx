@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
 import { useRouter } from "next/navigation";
@@ -9,6 +10,7 @@ import { handleResetOtp } from "@/services/service";
 import { toast } from "sonner";
 
 export default function ResetOtpForm() {
+	const [isPending, setIsPending] = useState<boolean>(false);
 	const router = useRouter();
 	const { email } = useStore() as {
 		email: string;
@@ -24,7 +26,9 @@ export default function ResetOtpForm() {
 			</h2>
 			<form
 				onSubmit={callHandleVerify}
-				className="w-3/4 flex flex-col gap-5 justify-center items-center mx-auto"
+				className={`w-3/4 flex flex-col gap-5 justify-center items-center mx-auto ${
+					isPending ? "cursor-progress" : ""
+				}`}
 			>
 				<Input
 					type="text"
@@ -38,10 +42,13 @@ export default function ResetOtpForm() {
 					type="submit"
 					text="Reset Password"
 					className="w-1/2 lg:w-1/3 my-14 mx-auto text-darker font-semibold"
+					disabled={isPending}
 				/>
 			</form>
 			<div
-				className="group flex justify-center cursor-pointer"
+				className={`group flex justify-center cursor-pointer ${
+					isPending ? "hidden" : ""
+				}`}
 				onClick={handleResend}
 			>
 				<span className="inline-block mx-1">Resend OTP?</span>
@@ -54,6 +61,8 @@ export default function ResetOtpForm() {
 
 	async function callHandleVerify(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
+		setIsPending(true);
+
 		const formData = new FormData(event.currentTarget);
 		const dataObject = Object.fromEntries(formData.entries()) as {
 			otp: string;
@@ -76,9 +85,13 @@ export default function ResetOtpForm() {
 			toast.error(res.message);
 			console.log(res.error);
 		}
+
+		setIsPending(false);
 	}
 
 	async function handleResend() {
+		setIsPending(true);
+
 		const res = await handleResetOtp(email);
 
 		if (res?.status === "success") {
@@ -91,5 +104,7 @@ export default function ResetOtpForm() {
 			toast.error(res.message);
 			console.log(res.error);
 		}
+
+		setIsPending(false);
 	}
 }

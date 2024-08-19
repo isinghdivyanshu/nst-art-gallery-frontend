@@ -51,7 +51,7 @@ const EmblaCarousel = ({ slides }: EmblaCarouselProps) => {
 									<Image
 										width={100}
 										height={100}
-										className="embla__slide__img"
+										className="embla__slide__img cursor-grab active:cursor-grabbing"
 										src={imageByIndex(index).src}
 										alt={`Slide ${index}`}
 									/>

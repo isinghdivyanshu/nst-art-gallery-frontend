@@ -40,6 +40,7 @@ export default function ResetMailForm() {
 					type="submit"
 					text="Send OTP"
 					className="w-1/2 lg:w-1/3 my-14 mx-auto text-darker font-semibold"
+					disabled={isPending}
 				/>
 			</form>
 			<Link href={"/login"} className={`${isPending ? "hidden" : ""}`}>

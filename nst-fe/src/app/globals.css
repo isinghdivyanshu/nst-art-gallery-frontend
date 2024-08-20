@@ -64,6 +64,14 @@
 	transform: translate(-50%, -50%);
 }
 
+.gradient-overlay {
+	background: linear-gradient(
+		to top,
+		rgba(11, 11, 11, 0.8),
+		rgba(11, 11, 11, 0)
+	);
+}
+
 .embla__button {
 	cursor: pointer;
 	touch-action: manipulation;

@@ -136,11 +136,12 @@ const EmblaCarousel = ({ slides }: EmblaCarouselProps) => {
 						))}
 					</div>
 					<div className="carousel_footer bg-dark flex justify-around p-5">
-						<ViewSomething
-							text="Use your own style"
-							className="text-light lg:text-xl w-2/3 px-44"
-						/>
-
+						<Link href={"/create"} className="w-2/3 px-44">
+							<ViewSomething
+								text="Use your own style"
+								className="text-light lg:text-xl"
+							/>
+						</Link>
 						<GdscFooter className="cursor-pointer w-1/3 flex justify-end" />
 					</div>
 				</div>

@@ -9,7 +9,7 @@ import { UserRound } from "lucide-react";
 
 export default function NavLinks() {
 	const pathName = usePathname();
-	const { isLoggedIn, name } = useStore();
+	const { isLoggedIn, name, logout } = useStore();
 
 	useEffect(() => {}, [isLoggedIn]);
 
@@ -52,23 +52,22 @@ export default function NavLinks() {
 				</Link>
 			))}
 			{isLoggedIn ? (
-				<Link
-					href={"/account"}
-					className="group transition-all duration-300 ease-in-out"
+				// <Link
+				// 	href={"/account"}
+				// 	className="group transition-all duration-300 ease-in-out"
+				// >
+				<span
+					className={`relative after:bg-skin after:absolute after:h-1 after:w-0 after:-bottom-4 after:left-0 hover:after:w-full after:transition-all after:duration-500 after:rounded ${
+						pathName == "/account" ? "text-skin after:w-full" : ""
+					}`}
+					onClick={logout}
 				>
-					<span
-						className={`relative after:bg-skin after:absolute after:h-1 after:w-0 after:-bottom-4 after:left-0 hover:after:w-full after:transition-all after:duration-500 after:rounded ${
-							pathName == "/account"
-								? "text-skin after:w-full"
-								: ""
-						}`}
-					>
-						<span className="flex justify-between items-center gap-5 text-sm">
-							<UserRound /> Hi, {name.split(" ")[0]}
-						</span>
+					<span className="flex justify-between items-center gap-5 text-sm">
+						<UserRound /> Hi, {name.split(" ")[0]}
 					</span>
-				</Link>
+				</span>
 			) : (
+				// </Link>
 				<Link
 					href={"/login"}
 					className="group transition-all duration-300 ease-in-out"

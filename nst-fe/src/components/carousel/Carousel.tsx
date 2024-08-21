@@ -9,13 +9,14 @@ import Image from "next/image";
 import GdscFooter from "../GdscFooter";
 import ViewSomething from "../ViewSomething";
 import Button from "../Button";
+import { Info } from "lucide-react";
 
 interface EmblaCarouselProps {
 	slides: number[];
 }
 
 const EmblaCarousel = ({ slides }: EmblaCarouselProps) => {
-	const [viewportRef, embla] = useEmblaCarousel();
+	const [viewportRef, embla] = useEmblaCarousel({ loop: true });
 	const [prevBtnEnabled, setPrevBtnEnabled] = useState(false);
 	const [nextBtnEnabled, setNextBtnEnabled] = useState(false);
 	const [selectedIndex, setSelectedIndex] = useState(0);
@@ -56,74 +57,91 @@ const EmblaCarousel = ({ slides }: EmblaCarouselProps) => {
 									<Image
 										width={100}
 										height={100}
-										className="embla__slide__img cursor-grab active:cursor-grabbing z-10"
+										className="embla__slide__img  z-10"
 										src={imageByIndex(index).src}
 										alt={imageByIndex(index).name}
 									/>
 								</div>
-								<div className="gradient-overlay absolute inset-0 z-10"></div>
-								<article className="image_overlay flex flex-col gap-3 absolute bottom-[calc(100svh-(100svh-12.25rem))] z-20 text-left pr-10 pl-8 lg:pr-96 lg:pl-48">
-									<h1 className="text-light text-5xl lg:text-6xl tracking-wide">
-										{imageByIndex(index).name.toUpperCase()}
-									</h1>
-									<h2 className="text-skin text-3xl lg:text-4xl tracking-wide">
-										{imageByIndex(index).artist}
-									</h2>
-									<p className="text-light text-lg font-normal">
-										{imageByIndex(index).desc}
-									</p>
-									<Link
-										href={imageByIndex(index).link}
-										target="_blank"
-									>
-										<ViewSomething
-											text="Learn More"
-											className="text-skin font-light w-fit"
-										/>
-									</Link>
-									<section className="flex gap-10 mt-5">
+								<div className="gradient-overlay absolute inset-0 cursor-grab active:cursor-grabbing z-10"></div>
+								<section className="flex flex-col lg:flex-row gap-10 absolute bottom-[calc(100svh-(100svh-12rem))] lg:bottom-[calc(100svh-(100svh-16rem))]">
+									<article className="image_overlay flex flex-col gap-3 z-20 text-left pl-20 lg:pl-48 w-2/3">
+										<h1 className="text-light text-5xl tracking-wide flex items-center gap-5">
+											{imageByIndex(
+												index
+											).name.toUpperCase()}
+											{imageByIndex(index).link ? (
+												<Link
+													href={
+														imageByIndex(index).link
+													}
+													target="_blank"
+												>
+													<Info
+														size={30}
+														strokeWidth={1.5}
+													/>
+												</Link>
+											) : (
+												<></>
+											)}
+										</h1>
+										<p className="text-light text-lg font-normal">
+											{imageByIndex(index).desc}
+										</p>
 										<Button
 											text="Use this style"
 											type="button"
-											className="w-fit text-light bg-soil"
+											className="w-fit text-light bg-soil !px-10 rounded-xl font-semibold mt-5"
 										/>
-										<Button
-											text="Create your own style"
-											type="button"
-											className="bg-transparent border border-soil backdrop-blur-lg text-light"
-										/>
-									</section>
-								</article>
+									</article>
+									<article className="flex flex-col gap-1 z-20 right-0 pr-20 pl-20 lg:w-1/3 lg:items-end">
+										<h4 className="text-skin text-2xl">
+											{imageByIndex(
+												index
+											).artist.name.toUpperCase()}
+										</h4>
+										<h5 className="text-light">
+											{imageByIndex(index).artist.period}
+										</h5>
+										<h4 className="text-skin underline underline-offset-2 italic text-xl mt-3">
+											{imageByIndex(index).art.name}
+											{imageByIndex(index).art.year ? (
+												<span className="font-thin">
+													{", "}
+													{
+														imageByIndex(index).art
+															.year
+													}
+												</span>
+											) : (
+												<></>
+											)}
+										</h4>
+									</article>
+								</section>
 							</div>
 						))}
 					</div>
 				</div>
-				<div className="absolute bottom-0">
-					<div className="button_container p-[1.5rem] flex justify-center items-center select-none w-screen">
-						<PrevButton
-							onClick={scrollPrev}
-							enabled={prevBtnEnabled}
-						/>
-						<NextButton
-							onClick={scrollNext}
-							enabled={nextBtnEnabled}
-						/>
+				<PrevButton onClick={scrollPrev} enabled={prevBtnEnabled} />
+				<NextButton onClick={scrollNext} enabled={nextBtnEnabled} />
+				<div className="absolute bottom-0 w-full">
+					<div className="embla__dots">
+						{scrollSnaps.map((_, index) => (
+							<DotButton
+								key={index}
+								selected={index === selectedIndex}
+								onClick={() => scrollTo(index)}
+							/>
+						))}
 					</div>
-					<div className="carousel_footer bg-[rgba(11,11,11,0.3)] backdrop-blur flex justify-around">
+					<div className="carousel_footer bg-dark flex justify-around p-5">
 						<ViewSomething
 							text="Use your own style"
-							className="justify-center text-light lg:text-xl w-1/3"
+							className="text-light lg:text-xl w-2/3 px-44"
 						/>
-						<div className="embla__dots w-1/3">
-							{scrollSnaps.map((_, index) => (
-								<DotButton
-									key={index}
-									selected={index === selectedIndex}
-									onClick={() => scrollTo(index)}
-								/>
-							))}
-						</div>
-						<GdscFooter className="cursor-pointer w-1/3 flex justify-center" />
+
+						<GdscFooter className="cursor-pointer w-1/3 flex justify-end" />
 					</div>
 				</div>
 			</div>

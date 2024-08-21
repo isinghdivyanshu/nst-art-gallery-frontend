@@ -4,32 +4,40 @@
 
 * {
 	box-sizing: border-box;
+}
+
+body,
+html {
 	padding: 0;
 	margin: 0;
 }
 
-body {
+body,
+html {
 	scrollbar-width: 0.5rem;
 	scrollbar-color: #9a8873 #161516;
 }
 
-body::-webkit-scrollbar {
+body::-webkit-scrollbar,
+html::-webkit-scrollbar {
 	width: 0.5em;
 }
 
-body::-webkit-scrollbar-track {
+body::-webkit-scrollbar-track,
+html::-webkit-scrollbar-track {
 	background-color: #161516;
 }
 
-body::-webkit-scrollbar-thumb {
+body::-webkit-scrollbar-thumb,
+html::-webkit-scrollbar-thumb {
 	background-color: #9a8873;
-	border-radius: 20px;
+	border-top: 30px;
 }
 
 .embla {
 	position: relative;
 	background-color: #0b0b0b;
-	width: 100vw;
+	max-width: 100%;
 	height: calc(100svh - 4.25rem);
 }
 
@@ -91,14 +99,17 @@ body::-webkit-scrollbar-thumb {
 }
 
 .embla__button {
+	position: absolute;
 	cursor: pointer;
 	touch-action: manipulation;
 	z-index: 1;
+	top: 50%;
 	width: 40px;
 	height: 40px;
 	justify-content: center;
 	align-items: center;
 	fill: #ffffff;
+	outline: 0;
 }
 
 .embla__button:disabled {
@@ -111,13 +122,21 @@ body::-webkit-scrollbar-thumb {
 	height: 100%;
 }
 
+.embla__button--prev {
+	left: 1rem;
+}
+
+.embla__button--next {
+	right: 1rem;
+}
+
 .embla__dots {
-	height: 6.75rem;
+	height: 4rem;
 	display: flex;
 	list-style: none;
 	justify-content: center;
 	align-items: center;
-	gap: 15px;
+	gap: 10px;
 	align-self: center;
 }
 
@@ -125,7 +144,6 @@ body::-webkit-scrollbar-thumb {
 	cursor: pointer;
 	width: 10px;
 	height: 10px;
-	border-radius: 50%;
 	display: flex;
 	align-items: center;
 }
@@ -134,7 +152,7 @@ body::-webkit-scrollbar-thumb {
 	background-color: #efefef;
 	width: 100%;
 	height: 4px;
-	border-radius: 2px;
+	border-radius: 100%;
 	content: "";
 }
 

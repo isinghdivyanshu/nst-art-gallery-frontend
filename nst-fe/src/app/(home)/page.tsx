@@ -1,8 +1,8 @@
 import Image from "next/image";
 import heroMain from "@/assets/hero/heroMain.svg";
-// import Button from "@/components/Button";
 import ViewSomething from "@/components/ViewSomething";
 import GdscFooter from "@/components/GdscFooter";
+import Link from "next/link";
 
 export default function Hero() {
 	return (
@@ -24,15 +24,12 @@ export default function Hero() {
 					<h1 className="text-4xl lg:text-7xl">
 						<span className="text-soil">Stylize</span> images.
 					</h1>
-					{/* <Button
-						text="Use this style"
-						className="mt-24"
-						onClick={() => {}}
-					/> */}
-					<ViewSomething
-						text="View Gallery"
-						className="mt-14 indent-2"
-					/>
+					<Link href={"/explore"}>
+						<ViewSomething
+							text="Explore"
+							className="mt-14 indent-2"
+						/>
+					</Link>
 				</article>
 			</section>
 			<GdscFooter className="absolute bottom-10 right-10" />

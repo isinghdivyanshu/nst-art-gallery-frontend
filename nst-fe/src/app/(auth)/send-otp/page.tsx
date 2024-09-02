@@ -1,7 +1,7 @@
 import Image from "next/image";
 import aside from "@/assets/auth/aside.svg";
 import GdscFooter from "@/components/GdscFooter";
-import ResetMailForm from "@/components/ResetMailForm";
+import ResetMailForm from "@/components/authForms/ResetMailForm";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 

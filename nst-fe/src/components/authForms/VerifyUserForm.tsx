@@ -1,20 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import Input from "./Input";
-import Button from "./Button";
-import { useRouter } from "next/navigation";
+import Input from "../Input";
+import Button from "../Button";
 import { useStore } from "@/app/store";
 import { handleVerify } from "@/services/service";
-import { handleResetOtp } from "@/services/service";
+import { handleResendOtp } from "@/services/service";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-export default function ResetOtpForm() {
+export default function EnterOtpFormForm() {
 	const [isPending, setIsPending] = useState<boolean>(false);
 	const router = useRouter();
-	const { email } = useStore() as {
-		email: string;
-	};
+	const { email } = useStore();
 
 	return (
 		<>
@@ -40,7 +38,7 @@ export default function ResetOtpForm() {
 				/>
 				<Button
 					type="submit"
-					text="Reset Password"
+					text="Verify Yourself"
 					className="w-1/2 lg:w-1/3 my-14 mx-auto text-darker font-semibold"
 					disabled={isPending}
 				/>
@@ -69,14 +67,12 @@ export default function ResetOtpForm() {
 		};
 
 		const { otp } = dataObject;
-		console.log(otp);
 
 		const res = await handleVerify({ email, otp });
 
 		if (res?.status === "success") {
 			toast.success(res.message);
-			localStorage.setItem("otp", otp);
-			router.replace("/reset-password");
+			router.replace("/login");
 		} else if (res?.status === "error") {
 			toast.error(res.message);
 		}
@@ -92,7 +88,7 @@ export default function ResetOtpForm() {
 	async function handleResend() {
 		setIsPending(true);
 
-		const res = await handleResetOtp(email);
+		const res = await handleResendOtp(email);
 
 		if (res?.status === "success") {
 			toast.success(res.message);

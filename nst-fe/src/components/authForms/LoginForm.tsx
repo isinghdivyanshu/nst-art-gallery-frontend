@@ -1,36 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import Input from "./Input";
-import Button from "./Button";
+import Input from "../Input";
+import Button from "../Button";
 import Link from "next/link";
-import { handleSignUp } from "@/services/service";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { handleLogin } from "@/services/service";
+import { toast } from "sonner";
+import { useStore } from "@/app/store";
 
-export default function SignUpForm() {
+export default function LoginForm() {
 	const [isPending, setIsPending] = useState<boolean>(false);
 	const router = useRouter();
+	const { setEmail, login } = useStore();
 
 	return (
 		<>
 			<h1 className="text-4xl text-light flex justify-center mb-20 font-semibold">
-				Sign Up
+				Log In
 			</h1>
 			<form
-				onSubmit={callHandleSignUp}
+				onSubmit={callHandleLogin}
 				className={`w-3/4 flex flex-col gap-5 justify-center items-center mx-auto ${
 					isPending ? "cursor-progress" : ""
 				}`}
 			>
-				<Input
-					type="text"
-					label="Name"
-					id="name"
-					placeholder="Jon Doe"
-					required={true}
-					groupClassName="w-full"
-				/>
 				<Input
 					type="email"
 					label="Email"
@@ -47,55 +41,58 @@ export default function SignUpForm() {
 					required={true}
 					groupClassName="w-full"
 				/>
-				<Input
-					type="password"
-					label="Confirm Password"
-					id="cPassword"
-					placeholder="* * * * * * * *"
-					required={true}
-					groupClassName="w-full"
-				/>
+				<Link
+					href={"/send-otp"}
+					className="text-sm hover:underline cursor-pointer text-soil self-end"
+				>
+					Forgot password?
+				</Link>
 				<Button
 					type="submit"
-					text="Sign Up"
-					className="w-1/2 lg:w-1/3 my-10 mx-auto bg-skin text-darker font-semibold"
+					text="Log In"
+					className="w-1/2 lg:w-1/3 my-14 mx-auto bg-skin text-darker font-semibold"
 					disabled={isPending}
 				/>
 			</form>
-			<Link href={"/login"} className={`${isPending ? "hidden" : ""}`}>
+			<Link href={"/register"} className={`${isPending ? "hidden" : ""}`}>
 				<div className="group flex justify-center cursor-pointer">
-					<span className="inline-block mx-1">Already a member?</span>
+					<span className="inline-block mx-1">Not a member?</span>
 					<span className="inline-block mx-1 text-soil group-hover:translate-x-2 transition duration-300">
-						Log In
+						Sign Up
 					</span>
 				</div>
 			</Link>
 		</>
 	);
 
-	async function callHandleSignUp(event: React.FormEvent<HTMLFormElement>) {
+	async function callHandleLogin(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		setIsPending(true);
 
 		const formData = new FormData(event.currentTarget);
 		const dataObject = Object.fromEntries(formData.entries()) as {
-			name: string;
 			email: string;
 			password: string;
-			cPassword: string;
 		};
-		const { name, email, password, cPassword } = dataObject;
+		const { email, password } = dataObject;
 
-		if (password != cPassword) {
-			toast.error("Passwords do not match");
-			return;
-		}
-
-		const res = await handleSignUp({ name, email, password });
+		const res = await handleLogin({ email, password });
 
 		if (res?.status === "success") {
 			toast.success(res.message);
-			router.replace("/login");
+			login(
+				res.response.user.email,
+				res.response.token,
+				res.response.user.name
+			);
+			router.replace("/create");
+		} else if (
+			res?.status === "error" &&
+			res?.message.includes("not verified")
+		) {
+			setEmail(email);
+			toast.error(res.message);
+			router.push("/verify-user");
 		} else if (res?.status === "error") {
 			toast.error(res.message);
 		}

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import aside from "@/assets/auth/aside.svg";
 import GdscFooter from "@/components/GdscFooter";
-import SignUpForm from "@/components/SignUpForm";
+import SignUpForm from "@/components/authForms/SignUpForm";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 

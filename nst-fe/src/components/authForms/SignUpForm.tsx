@@ -1,33 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import Input from "./Input";
-import Button from "./Button";
+import Input from "../Input";
+import Button from "../Button";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { handleResetOtp } from "@/services/service";
+import { handleSignUp } from "@/services/service";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { useStore } from "@/app/store";
 
-export default function ResetMailForm() {
+export default function SignUpForm() {
 	const [isPending, setIsPending] = useState<boolean>(false);
 	const router = useRouter();
 	const { setEmail } = useStore();
+
 	return (
 		<>
-			<h1 className="text-4xl text-light flex justify-center mb-10 font-semibold">
-				Reset Password
+			<h1 className="text-4xl text-light flex justify-center mb-20 font-semibold">
+				Sign Up
 			</h1>
-			<h2 className="text-soil text-center flex justify-center mb-20">
-				Enter your email address and we&apos;ll send you a one time
-				password valid for 30 minutes
-			</h2>
 			<form
-				onSubmit={callHandleResetOtp}
+				onSubmit={callHandleSignUp}
 				className={`w-3/4 flex flex-col gap-5 justify-center items-center mx-auto ${
 					isPending ? "cursor-progress" : ""
 				}`}
 			>
+				<Input
+					type="text"
+					label="Name"
+					id="name"
+					placeholder="Jon Doe"
+					required={true}
+					groupClassName="w-full"
+				/>
 				<Input
 					type="email"
 					label="Email"
@@ -36,18 +41,32 @@ export default function ResetMailForm() {
 					required={true}
 					groupClassName="w-full"
 				/>
+				<Input
+					type="password"
+					label="Password"
+					id="password"
+					placeholder="* * * * * * * *"
+					required={true}
+					groupClassName="w-full"
+				/>
+				<Input
+					type="password"
+					label="Confirm Password"
+					id="cPassword"
+					placeholder="* * * * * * * *"
+					required={true}
+					groupClassName="w-full"
+				/>
 				<Button
 					type="submit"
-					text="Send OTP"
-					className="w-1/2 lg:w-1/3 my-14 mx-auto text-darker font-semibold"
+					text="Sign Up"
+					className="w-1/2 lg:w-1/3 my-10 mx-auto bg-skin text-darker font-semibold"
 					disabled={isPending}
 				/>
 			</form>
 			<Link href={"/login"} className={`${isPending ? "hidden" : ""}`}>
 				<div className="group flex justify-center cursor-pointer">
-					<span className="inline-block mx-1">
-						Know your password?
-					</span>
+					<span className="inline-block mx-1">Already a member?</span>
 					<span className="inline-block mx-1 text-soil group-hover:translate-x-2 transition duration-300">
 						Log In
 					</span>
@@ -56,30 +75,30 @@ export default function ResetMailForm() {
 		</>
 	);
 
-	async function callHandleResetOtp(event: React.FormEvent<HTMLFormElement>) {
+	async function callHandleSignUp(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		setIsPending(true);
 
 		const formData = new FormData(event.currentTarget);
 		const dataObject = Object.fromEntries(formData.entries()) as {
+			name: string;
 			email: string;
+			password: string;
+			cPassword: string;
 		};
+		const { name, email, password, cPassword } = dataObject;
 
-		const { email } = dataObject;
+		if (password != cPassword) {
+			toast.error("Passwords do not match");
+			return;
+		}
 
-		const res = await handleResetOtp(email);
+		const res = await handleSignUp({ name, email, password });
 
 		if (res?.status === "success") {
 			toast.success(res.message);
 			setEmail(email);
-			router.replace("/verify-otp");
-		} else if (
-			res?.status === "error" &&
-			res?.message.includes("not verified")
-		) {
-			setEmail(email);
-			toast.error(res.message);
-			router.push("/otp-verify");
+			router.replace("/verify-user");
 		} else if (res?.status === "error") {
 			toast.error(res.message);
 		}

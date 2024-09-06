@@ -63,7 +63,7 @@ const EmblaCarousel = ({ slides }: EmblaCarouselProps) => {
 									/>
 								</div>
 								<div className="gradient-overlay absolute inset-0 cursor-grab active:cursor-grabbing z-10"></div>
-								<section className="flex flex-col lg:flex-row gap-10 absolute bottom-[calc(100svh-(100svh-12rem))] lg:bottom-[calc(100svh-(100svh-16rem))]">
+								<section className="flex flex-col lg:flex-row gap-10 absolute bottom-[calc(100svh-(100svh-12rem))]">
 									<article className="image_overlay flex flex-col gap-3 z-20 text-left pl-20 lg:pl-48 w-2/3">
 										<h1 className="text-light text-5xl tracking-wide flex items-center gap-5">
 											{imageByIndex(

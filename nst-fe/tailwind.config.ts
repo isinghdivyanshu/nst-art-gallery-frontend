@@ -11,6 +11,7 @@ const config: Config = {
 			colors: {
 				darker: "#0B0B0B",
 				dark: "#161516",
+				mix: "#363336",
 				soil: "#9A8873",
 				skin: "#EAD0B3",
 				light: "#FFFFFF",

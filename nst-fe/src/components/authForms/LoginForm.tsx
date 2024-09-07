@@ -85,7 +85,7 @@ export default function LoginForm() {
 				res.response.token,
 				res.response.user.name
 			);
-			router.replace("/create");
+			router.back();
 		} else if (
 			res?.status === "error" &&
 			res?.message.includes("not verified")

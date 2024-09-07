@@ -196,7 +196,7 @@ function ArtSection({
 }: ArtSectionProps) {
 	return (
 		<section
-			className={`w-full rounded-3xl bg-bg p-10 flex gap-10 items-center flex-col xl:flex-row ${containerClassname}`}
+			className={`w-full rounded-3xl bg-myGray p-10 flex gap-10 items-center flex-col xl:flex-row ${containerClassname}`}
 		>
 			<Image
 				src={src}

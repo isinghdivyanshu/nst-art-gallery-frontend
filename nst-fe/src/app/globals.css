@@ -12,23 +12,22 @@ html {
 	margin: 0;
 }
 
-* {
-	scrollbar-width: 0.5rem;
-	scrollbar-color: #9a8873 #161516;
-}
-
-*::-webkit-scrollbar {
+::-webkit-scrollbar {
 	width: 0.5em;
 }
 
-*::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
 	background-color: #161516;
 	border-radius: 30px;
 }
 
-*::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
 	background-color: #9a8873;
-	border: 30px;
+	border-radius: 30px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: #ead0b3;
 }
 
 .embla {

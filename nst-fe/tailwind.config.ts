@@ -15,6 +15,7 @@ const config: Config = {
 				soil: "#9A8873",
 				skin: "#EAD0B3",
 				light: "#FFFFFF",
+				bg: '#201F20'
 			},
 		},
 	},

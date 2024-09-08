@@ -3,12 +3,10 @@
 import { useRef, useState } from "react";
 import Button from "@/components/Button";
 import Image from "next/image";
-// import StyleTransfer from "@/services/styleTransfer";
+import CallModal from "@/components/modal/CallModal";
 
 export default function CreateArt() {
-	// const style = new StyleTransfer();
-	// style.loadModels();
-
+	const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 	const contentFileInput = useRef<HTMLInputElement>(null);
 	const styleFileInput = useRef<HTMLInputElement>(null);
 	const [contentImageData, setContentImageData] = useState<{
@@ -26,6 +24,10 @@ export default function CreateArt() {
 		name: "",
 	});
 	const [styleStrength, setStyleStrength] = useState<string>("0.8");
+
+	const toggleModal = () => {
+		setModalIsOpen(!modalIsOpen);
+	};
 
 	const handleClick = (ref: React.RefObject<HTMLInputElement>) => {
 		ref.current?.click();
@@ -60,19 +62,10 @@ export default function CreateArt() {
 		setStyleStrength(event.target.value);
 	};
 
-	// const styleImage = async () => {
-	// 	await style.stylizeImage(
-	// 		contentImageData.src,
-	// 		styleImageData.src,
-	// 		"../../../assets/tempModelStorage",
-	// 		+styleStrength
-	// 	);
-	// };
-
 	return (
-		<main className="min-h-[calc(100svh-4.25rem)] bg-dark">
+		<main className="min-h-[calc(100svh-4.25rem)] w-screen bg-dark">
 			<section className="flex flex-col lg:flex-row gap-20 items-center">
-				<article className="flex flex-col justify-center lg:items-end  w-1/2 p-20 lg:p-28">
+				<article className="flex flex-col justify-center lg:items-end  w-1/2 p-16 xl:p-28">
 					<div className="flex flex-col justify-normal items-center gap-5">
 						<h1 className="text-2xl text-soil font-semibold tracking-widest text-center">
 							Primary Image
@@ -87,7 +80,7 @@ export default function CreateArt() {
 										alt={
 											contentImageData.name ?? "Uploaded"
 										}
-										className="w-full h-full"
+										className="w-full h-full text-light"
 									/>
 									<div className="absolute top-0 left-0 w-full h-full bg-dark opacity-0 flex justify-center items-center group-hover:opacity-75 transition duration-500">
 										<Button
@@ -125,7 +118,7 @@ export default function CreateArt() {
 						</h1>
 					</div>
 				</article>
-				<article className="flex flex-col justify-center lg:items-start  w-1/2 p-20 lg:p-28">
+				<article className="flex flex-col justify-center lg:items-start  w-1/2 p-16 xl:p-28">
 					<div className="flex flex-col justify-normal items-center gap-5">
 						<h1 className="text-2xl text-soil font-semibold tracking-widest text-center">
 							Art Style
@@ -138,16 +131,14 @@ export default function CreateArt() {
 										height={100}
 										src={styleImageData.src}
 										alt={styleImageData.name ?? "Uploaded"}
-										className="w-full h-full"
+										className="w-full h-full text-light"
 									/>
 									<div className="absolute top-0 left-0 min-w-full min-h-full bg-dark opacity-0 flex flex-col gap-5 justify-center group-hover:opacity-75 transition duration-500 items-stretch p-5">
 										<Button
 											className="backdrop-blur-3xl bg-transparent border border-light text-light text-sm font-bold tracking-tighter px-8 py-1"
 											type="button"
 											text="Choose from our styles"
-											onClick={() =>
-												handleClick(styleFileInput)
-											}
+											onClick={toggleModal}
 										/>
 										<Button
 											className="backdrop-blur-3xl bg-transparent border border-light text-light text-sm font-bold tracking-tighter px-8 py-1"
@@ -207,9 +198,13 @@ export default function CreateArt() {
 					type="button"
 					text="Stylize"
 					className="font-medium text-light bg-soil px-14 mb-20"
-					// onClick={styleImage}
 				/>
 			</div>
+			<CallModal
+				modalType="ShowAllArtModal"
+				isOpen={modalIsOpen}
+				onReqClose={toggleModal}
+			/>
 		</main>
 	);
 }

@@ -172,3 +172,9 @@ html {
 .ReactModal__Overlay--before-close {
 	opacity: 0;
 }
+
+.nav {
+	-webkit-box-shadow: inset 0px -20px 18px -24px rgba(0, 0, 0, 0.75);
+	-moz-box-shadow: inset 0px -20px 18px -24px rgba(0, 0, 0, 0.75);
+	box-shadow: inset 0px -20px 18px -24px rgba(0, 0, 0, 0.75);
+}

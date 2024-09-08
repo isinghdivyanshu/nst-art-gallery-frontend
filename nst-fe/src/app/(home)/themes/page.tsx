@@ -1,5 +1,6 @@
 import Image, { StaticImageData } from "next/image";
 import placeholder from "@/../pictures/palceholder.jpg";
+import ThemeCard from "@/components/ThemeCard";
 
 export default function Theme() {
 	return (
@@ -120,7 +121,7 @@ export default function Theme() {
 							desc="Self-Portrait with Thorn Necklace and
 									Hummingbird, "
 							year="1889"
-							containerClassname="xl:flex-row-reverse my-5"
+							containerClassName="xl:flex-row-reverse my-5"
 						/>
 						<ArtSection
 							src={placeholder}
@@ -180,8 +181,8 @@ interface ArtSectionProps {
 	artistDetail: string;
 	desc: string;
 	year: string;
-	containerClassname?: string;
-	imageClassname?: string;
+	containerClassName?: string;
+	imageClassName?: string;
 }
 
 function ArtSection({
@@ -191,19 +192,19 @@ function ArtSection({
 	artistDetail,
 	desc,
 	year,
-	containerClassname,
-	imageClassname,
+	containerClassName,
+	imageClassName,
 }: ArtSectionProps) {
 	return (
 		<section
-			className={`w-full rounded-3xl bg-myGray p-10 flex gap-10 items-center flex-col xl:flex-row ${containerClassname}`}
+			className={`w-full rounded-3xl bg-myGray p-10 flex gap-10 items-center flex-col xl:flex-row ${containerClassName}`}
 		>
 			<Image
 				src={src}
 				width={600}
 				height={1000}
 				alt={alt}
-				className={`${imageClassname}`}
+				className={`${imageClassName}`}
 			/>
 			<article className="h-full flex flex-col justify-center  text-xl">
 				<p>{artist}</p>
@@ -216,36 +217,5 @@ function ArtSection({
 				<hr className="w-full my-5" />
 			</article>
 		</section>
-	);
-}
-
-interface ThemeCardProps {
-	src: StaticImageData;
-	alt: string;
-	name: string;
-	containerClassname?: string;
-	imageClassname?: string;
-}
-
-function ThemeCard({
-	src,
-	alt,
-	name,
-	containerClassname,
-	imageClassname,
-}: ThemeCardProps) {
-	return (
-		<article className={`flex flex-col ${containerClassname}`}>
-			<Image
-				src={src}
-				width={200}
-				height={200}
-				alt={alt}
-				className={`${imageClassname}`}
-			/>
-			<p className="text-center text-2xl mt-3 text-skin font-bold">
-				{name}
-			</p>
-		</article>
 	);
 }

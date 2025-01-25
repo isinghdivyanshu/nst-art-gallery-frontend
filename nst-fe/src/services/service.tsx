@@ -27,14 +27,15 @@ export async function fetchEndpoint({
 
 	let headers = auth
 		? {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-		  }
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		}
 		: { "Content-Type": "application/json" };
 	headers = {
 		...headers,
 		...addHeader,
 	};
+	console.log("[HEADERS] -->", headers);
 
 	let body = reqBody ? JSON.stringify(reqBody) : undefined;
 
@@ -54,6 +55,7 @@ export async function fetchEndpoint({
 				response: res,
 				status: res.status,
 				message: res.message,
+				likes: res.likes,
 			};
 		}
 
@@ -78,6 +80,7 @@ export async function fetchEndpoint({
 }
 
 //-----------AUTH-----------
+
 //Register
 interface handleSignUpProps {
 	name: string;
@@ -176,4 +179,30 @@ export async function handleResetPassword({
 	});
 
 	return reset;
+}
+
+// Gallery
+// Get all arts
+export async function getAllArts(page: number = 1) {
+	const response: any = await fetchEndpoint({
+		endPoint: `/art/gallery?page=${page}`,
+		method: "GET",
+	});
+	return response;
+}
+
+// Likes
+// Like an art
+interface handleLikeProps {
+	artSlug: string;
+}
+export async function handleLike({ artSlug}: handleLikeProps, token: string) {
+	const response = await fetchEndpoint({
+		endPoint: `/art/${artSlug}`,
+		method: "POST",
+		auth: true,
+		token: token,
+	});
+
+	return response;
 }

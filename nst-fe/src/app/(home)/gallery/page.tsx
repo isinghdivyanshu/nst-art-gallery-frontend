@@ -1,7 +1,127 @@
+"use client";
 import Image, { StaticImageData } from "next/image";
-import placeholder from "../../../../pictures/palceholder.jpg";
+import placeholder from "../../../../pictures/placeholder.jpg";
+import { getAllArts, handleLike } from "@/services/service";
+import { useState, useEffect } from "react";
+import { Art } from "@/models/art";
+import { toast } from "sonner";
+
+interface ArtCardProps {
+	style: any;
+	src: StaticImageData | string;
+	desc: string;
+	author: string;
+	likes: number;
+	artSlug: string;
+	onLike: (artId: string) => void;
+	likedByUser: boolean;
+}
+
+const ArtCard = ({
+	style,
+	src,
+	desc,
+	author,
+	likes,
+	artSlug,
+	onLike,
+	likedByUser,
+}: ArtCardProps) => {
+	return (
+		<article
+			className="relative bg-mix flex flex-col overflow-auto rounded-lg p-2"
+			style={style}
+		>
+			<Image
+				src={src}
+				alt={`Art by ${author}`}
+				width={50}
+				height={50}
+				className="w-full rounded-lg h-4/5"
+			/>
+			<p className="text-skin line-clamp-2 text-ellipsis whitespace-pre-line overflow-hidden mt-3 mb-1">
+				{desc}
+			</p>
+			<span className="text-light italic">{author}</span>
+			<aside className="text-light self-end flex items-center">
+				{likes}&nbsp;&nbsp;
+				<button
+					onClick={() => onLike(artSlug)}
+					className="text-light self-end flex items-center gap-1 transition-all hover:scale-110"
+				>
+					<svg
+						className={`w-6 h-6 ${likedByUser ? 'text-red-500 fill-current' : 'text-gray-400'}`}
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+						strokeWidth="2"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+						/>
+					</svg>
+				</button>
+			</aside>
+		</article>
+	);
+};
 
 export default function Gallery() {
+	const [arts, setArts] = useState<Art[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchArts = async () => {
+			try {
+				const data = await getAllArts();
+				console.log(data);
+				if (data?.response.arts) {
+					const serializedArts = data?.response.arts;
+					setArts(serializedArts);
+				}
+			} catch (error) {
+				toast.error("Failed to fetch arts");
+				console.log("Failed to fetch arts:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		setLoading(true);
+		let isMounted = true;
+		if (isMounted) {
+			fetchArts();
+		}
+		return () => {
+			isMounted = false;
+		};
+	}, []);
+
+	const handleLikeClick = async (artSlug: string) => {
+		try {
+			const token = localStorage.getItem('token'); // Replace with actual token retrieval logic
+			if (token) {
+				const response = await handleLike({ artSlug }, token);
+				console.log("Like response:", response);
+				if (response) {
+					setArts((prevArts) =>
+						prevArts.map((art) =>
+							art.slug === artSlug
+								? { ...art, likes: art.likes + (response.likes ? 1 : -1), likedByUser: response.likes === 1 }
+								: art
+						)
+					);
+				}
+			} else {
+				toast.error("You need to be logged in to like an art.");
+			}
+		} catch (error) {
+			toast.error("Failed to like art");
+			console.error("Failed to like art:", error);
+		}
+	};
+
 	const x = 10,
 		y = 20;
 	const images = [];
@@ -29,10 +149,11 @@ export default function Gallery() {
 		},
 	];
 
-	for (let i = 0; i < 100; i++) {
+	for (let i = 0; i < arts.length; i++) {
 		const { width, height, marginTop } = sizes[i % 5];
 		images.push(
 			<ArtCard
+				key={arts[i]?._id}
 				style={{
 					width,
 					height,
@@ -41,27 +162,13 @@ export default function Gallery() {
 							? marginTop(i)
 							: marginTop,
 				}}
-				src={placeholder}
-				author="Divyanshu Singh"
-				likes={27}
-				desc="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Vero
-				et aperiam fugit cum laudantium! Dignissimos quaerat natus
-				repellendus facilis quibusdam nihil soluta temporibus quas in
-				saepe, earum nobis ut rerum? Velit similique ea enim tenetur
-				quam quidem odio a aut consequatur iusto. Sapiente esse ab iure
-				perspiciatis fugiat obcaecati, ut quae soluta explicabo?
-				Explicabo culpa commodi quae illum blanditiis suscipit? Impedit
-				veniam quae nihil quia placeat distinctio quos quas quibusdam
-				numquam, libero, illum vero, sunt atque tenetur! Dolorem labore
-				tenetur debitis sed! Nemo est cum ut harum at, tempora aperiam.
-				Repellat, exercitationem dolor harum saepe incidunt repudiandae
-				totam molestiae doloribus impedit dolores nesciunt, quo
-				asperiores atque vel error culpa! Officiis, architecto. Eum,
-				quos qui atque voluptas eaque iste labore delectus. Pariatur
-				quia dolor recusandae sequi nesciunt aspernatur facilis est rem
-				perferendis error, ut earum culpa quas nulla assumenda officia
-				velit autem! Accusamus facere ea dolor blanditiis ipsam quidem
-				esse magnam.."
+				src={arts[i]?.image || placeholder}
+				author={arts[i]?.artist.name}
+				likes={arts[i]?.likes}
+				desc={arts[i]?.description}
+				artSlug={arts[i]?.slug}
+				onLike={handleLikeClick}
+				likedByUser={arts[i]?.likedByUser}
 			/>
 		);
 	}
@@ -85,39 +192,7 @@ export default function Gallery() {
 			<section className="flex gap-2 justify-centers flex-wrap">
 				{images}
 			</section>
+			{loading && <p>Loading...</p>}
 		</main>
 	);
-
-	interface ArtCardProps {
-		style: any;
-		src: StaticImageData;
-		desc: string;
-		author: string;
-		likes: number;
-		liked?: boolean;
-	}
-
-	function ArtCard({ style, src, desc, author, likes }: ArtCardProps) {
-		return (
-			<article
-				className="relative bg-mix flex flex-col overflow-auto rounded-lg p-2"
-				style={style}
-			>
-				<Image
-					src={src}
-					alt={`Art by ${author}`}
-					width={50}
-					height={50}
-					className="w-full rounded-lg h-4/5"
-				/>
-				<p className="text-skin line-clamp-2 text-ellipsis whitespace-pre-line overflow-hidden mt-3 mb-1">
-					{desc}
-				</p>
-				<span className="text-light italic">{author}</span>
-				<aside className="text-light self-end">
-					{likes}&nbsp;&nbsp;🤍
-				</aside>
-			</article>
-		);
-	}
 }

@@ -1,5 +1,5 @@
 import Image, { StaticImageData } from "next/image";
-import placeholder from "@/../pictures/palceholder.jpg";
+import placeholder from "@/../pictures/placeholder.jpg";
 import ThemeCard from "@/components/ThemeCard";
 
 export default function Theme() {

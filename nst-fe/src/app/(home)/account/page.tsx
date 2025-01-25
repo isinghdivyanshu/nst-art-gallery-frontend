@@ -1,5 +1,5 @@
 import Image, { StaticImageData } from "next/image";
-import placeholder from "../../../../pictures/palceholder.jpg";
+import placeholder from "../../../../pictures/placeholder.jpg";
 import SignOutButton from "@/components/account/signOutButton";
 import ViewSomething from "@/components/ViewSomething";
 import Link from "next/link";

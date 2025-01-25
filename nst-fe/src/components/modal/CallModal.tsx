@@ -1,7 +1,7 @@
 import Modal from "react-modal";
 import { ChevronLeft } from "lucide-react";
 import ThemeCard from "../ThemeCard";
-import placeholder from "../../../pictures/palceholder.jpg";
+import placeholder from "../../../pictures/placeholder.jpg";
 
 interface CallModalProps {
 	modalType?: string;

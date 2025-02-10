@@ -75,7 +75,6 @@ export default function LoginForm() {
 			password: string;
 		};
 		const { email, password } = dataObject;
-
 		const res = await handleLogin({ email, password });
 
 		if (res?.status === "success") {
@@ -83,7 +82,8 @@ export default function LoginForm() {
 			login(
 				res.response.user.email,
 				res.response.token,
-				res.response.user.name
+				res.response.user.name,
+				res.response.user.id
 			);
 			router.back();
 		} else if (

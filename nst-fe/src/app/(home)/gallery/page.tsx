@@ -75,13 +75,14 @@ export default function Gallery() {
 		const fetchArts = async () => {
 			try {
 				const data = await getAllArts();
-				console.log(data);
 				if (data?.response.arts) {
-					const serializedArts = data?.response.arts;
+					const serializedArts = data.response.arts.map((art: { likedByUser: any; }) => ({
+						...art,
+						likedByUser: Boolean(art.likedByUser) // Ensure boolean value
+					}));
 					setArts(serializedArts);
 				}
 			} catch (error) {
-				toast.error("Failed to fetch arts");
 				console.log("Failed to fetch arts:", error);
 			} finally {
 				setLoading(false);
@@ -98,30 +99,34 @@ export default function Gallery() {
 		};
 	}, []);
 
+	// Update the handleLikeClick function to properly toggle the state
 	const handleLikeClick = async (artSlug: string) => {
 		try {
-			const token = localStorage.getItem('token'); // Replace with actual token retrieval logic
-			if (token) {
-				const response = await handleLike({ artSlug }, token);
-				console.log("Like response:", response);
-				if (response) {
-					setArts((prevArts) =>
-						prevArts.map((art) =>
-							art.slug === artSlug
-								? { ...art, likes: art.likes + (response.likes ? 1 : -1), likedByUser: response.likes === 1 }
-								: art
-						)
-					);
-				}
-			} else {
+			const token = localStorage.getItem('token');
+			if (!token) {
 				toast.error("You need to be logged in to like an art.");
+				return;
+			}
+
+			const response = await handleLike({ artSlug }, token);
+			if (response) {
+				setArts((prevArts) =>
+					prevArts.map((art) =>
+						art.slug === artSlug
+							? {
+								...art,
+								likes: art.likes + (response.likes ? 1 : -1),
+								likedByUser: !art.likedByUser // Toggle the liked state
+							}
+							: art
+					)
+				);
 			}
 		} catch (error) {
 			toast.error("Failed to like art");
 			console.error("Failed to like art:", error);
 		}
 	};
-
 	const x = 10,
 		y = 20;
 	const images = [];

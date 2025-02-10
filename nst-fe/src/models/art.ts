@@ -4,7 +4,6 @@ export interface Artist {
 }
 
 export interface Art {
-	likedByUser: boolean;
 	_id: string;
 	title: string;
 	description: string;
@@ -14,4 +13,5 @@ export interface Art {
 	slug: string;
 	createdAt: string;
 	published: boolean;
+	likedByUser: boolean;
 }

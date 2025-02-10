@@ -1,10 +1,49 @@
+"use client";
 import Image, { StaticImageData } from "next/image";
 import placeholder from "../../../../pictures/placeholder.jpg";
 import SignOutButton from "@/components/account/signOutButton";
 import ViewSomething from "@/components/ViewSomething";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Art } from "@/models/art";
+import { getAllUserArts } from "@/services/service";
 
 export default function Account() {
+	const [arts, setArts] = useState<Art[]>([]);
+	const [loading, setLoading] = useState(true);
+	const name = localStorage.getItem("name");
+	useEffect(() => {
+		const fetchArts = async () => {
+			try {
+				const id = localStorage.getItem("id");
+				if (!id) {
+					throw new Error("Unable to fetch user arts");
+				}
+				const data = await getAllUserArts(id);
+				console.log(data);
+				if (data?.response.arts) {
+					const serializedArts = data?.response.arts;
+					setArts(serializedArts);
+				}
+
+
+			} catch (error) {
+				console.log("Failed to fetch arts:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		setLoading(true);
+		let isMounted = true;
+		if (isMounted) {
+			fetchArts();
+		}
+		return () => {
+			isMounted = false;
+		};
+	}, []);
+
 	return (
 		<main className="relative bg-dark py-20 px-48">
 			<section className="relative bg-myGray py-10 px-5 flex flex-col items-center gap-2 mb-10">
@@ -15,31 +54,25 @@ export default function Account() {
 					height={200}
 					className="rounded-full"
 				/>
-				<h1 className="text-3xl text-skin mt-5">Divyanshu Singh</h1>
-				<h2 className="text-soil">isinghdivyanshu</h2>
+				<h1 className="text-3xl text-skin mt-5">{name} </h1>
+
 				<SignOutButton />
 			</section>
 			<section>
 				<h1 className="text-3xl text-light mb-5">Previous Art</h1>
-				<section className="flex flex-wrap gap-2 items-center justify-center">
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
-					<ArtCard />
+				<section className="flex flex-wrap gap-4 items-start justify-center">
+					{arts.map((art) => (
+						<ArtCard
+							key={art._id}
+							src={art.image || placeholder}
+							desc={art.description}
+							likes={art.likes}
+							artSlug={art.slug}
+						/>
+					))}
+					{arts.length === 0 && (
+						<p className="text-light text-center">No artworks yet</p>
+					)}
 				</section>
 			</section>
 			<Link href={"/create"}>
@@ -52,36 +85,26 @@ export default function Account() {
 	);
 }
 
-function ArtCard({ src }: { src?: StaticImageData }) {
+interface ArtCardProps {
+	src: StaticImageData | string;
+	desc: string;
+	likes: number;
+	artSlug: string;
+}
+function ArtCard({ src, desc, likes, artSlug }: ArtCardProps) {
 	return (
+		console.log(src),
 		<article className="relative bg-mix p-2 flex flex-col w-52 overflow-hidden rounded-lg">
 			<Image
-				src={placeholder}
-				alt="Placeholder"
+				src={src}
+				alt={desc.split(" ").pop() || ""}
 				width={300}
 				height={300}
 			/>
 			<p className="text-skin overflow-hidden whitespace-pre-line text-ellipsis mt-2 line-clamp-3 mb-2">
-				Lorem ipsum, dolor sit amet consectetur adipisicing elit. Vero
-				et aperiam fugit cum laudantium! Dignissimos quaerat natus
-				repellendus facilis quibusdam nihil soluta temporibus quas in
-				saepe, earum nobis ut rerum? Velit similique ea enim tenetur
-				quam quidem odio a aut consequatur iusto. Sapiente esse ab iure
-				perspiciatis fugiat obcaecati, ut quae soluta explicabo?
-				Explicabo culpa commodi quae illum blanditiis suscipit? Impedit
-				veniam quae nihil quia placeat distinctio quos quas quibusdam
-				numquam, libero, illum vero, sunt atque tenetur! Dolorem labore
-				tenetur debitis sed! Nemo est cum ut harum at, tempora aperiam.
-				Repellat, exercitationem dolor harum saepe incidunt repudiandae
-				totam molestiae doloribus impedit dolores nesciunt, quo
-				asperiores atque vel error culpa! Officiis, architecto. Eum,
-				quos qui atque voluptas eaque iste labore delectus. Pariatur
-				quia dolor recusandae sequi nesciunt aspernatur facilis est rem
-				perferendis error, ut earum culpa quas nulla assumenda officia
-				velit autem! Accusamus facere ea dolor blanditiis ipsam quidem
-				esse magnam.
+				{desc}
 			</p>
-			<aside className="text-light self-end">27&nbsp;&nbsp;🤍</aside>
+			<aside className="text-light self-end">{likes}&nbsp;&nbsp;🤍</aside>
 		</article>
 	);
 }

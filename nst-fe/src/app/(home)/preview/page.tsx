@@ -8,7 +8,18 @@ import { toast } from "sonner";
 import { publishArt, saveArt } from "@/services/service";
 import { useArtStore } from "@/store/ArtStore";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import v1 from "../../../../pictures/v1.svg";
+import v2 from "../../../../pictures/v2.svg";
+import v3 from "../../../../pictures/v3.svg";
 
+const PREDEFINED_THEMES = [
+    "Retro Pop",
+    "Pop Art",
+    "Surrealism",
+    "Impressionism",
+    "Cubism",
+    "Post Impression"
+] as const;
 export default function Preview() {
     const router = useRouter();
     const [artName, setArtName] = useState("");
@@ -31,9 +42,7 @@ export default function Preview() {
         try {
             const response = await fetch(URL.createObjectURL(stylizedImage));
             const blob = await response.blob();
-            console.log(blob);
             const url = window.URL.createObjectURL(blob);
-            console.log(url);
             const link = document.createElement('a');
             link.href = url;
             link.download = `${artName || 'stylized-art'}.jpg`;
@@ -139,7 +148,6 @@ export default function Preview() {
     return (
         <main className="min-h-[calc(100svh-4.25rem)] w-screen bg-dark">
             <section className="flex flex-col lg:flex-row gap-20 items-start p-16 xl:p-28">
-                {/* Left side - Preview */}
                 <article className="flex flex-col justify-center lg:items-start w-2/3 gap-8">
                     <div className="border border-soil flex justify-center items-center overflow-hidden p-2">
                         <div className="relative w-full h-full">
@@ -164,22 +172,24 @@ export default function Preview() {
                             placeholder="Enter art name..."
                             className="bg-mix text-light p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-soil"
                         />
-                        {/* Theme Field */}
                         <div className="w-full flex flex-col gap-6">
                             <label htmlFor="artTheme" className="text-light text-2xl font-medium">
                                 Theme
                             </label>
-                            <input
+                            <select
                                 id="artTheme"
-                                type="text"
                                 value={artTheme}
                                 onChange={(e) => setArtTheme(e.target.value)}
-                                placeholder="Enter art theme..."
-                                className="bg-mix text-light p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-soil"
-                            />
+                                className="bg-mix text-light p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-soil appearance-none cursor-pointer"
+                            >
+                                <option value="" disabled>Select a theme...</option>
+                                {PREDEFINED_THEMES.map((theme) => (
+                                    <option key={theme} value={theme} className="bg-dark">
+                                        {theme}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
-
-                        {/* Description Field */}
                         <div className="flex flex-col gap-2">
                             <label htmlFor="artDescription" className="text-light text-2xl font-medium">
                                 Description
@@ -209,7 +219,6 @@ export default function Preview() {
                     </div>
                 </article>
 
-                {/* Right side - Actions */}
                 <article className="flex flex-col justify-start lg:items-start gap-6">
                     <Button
                         type="button"

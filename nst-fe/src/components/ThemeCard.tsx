@@ -1,7 +1,7 @@
 import Image, { StaticImageData } from "next/image";
 
 interface ThemeCardProps {
-	src: StaticImageData;
+	src: StaticImageData | string;
 	alt: string;
 	name: string;
 	containerClassName?: string;
@@ -17,13 +17,14 @@ export default function ThemeCard({
 }: ThemeCardProps) {
 	return (
 		<article className={`group flex flex-col ${containerClassName}`}>
-			<Image
-				src={src}
-				width={200}
-				height={200}
-				alt={alt}
-				className={`${imageClassName}`}
-			/>
+			<div className="relative w-[200px] h-[200px]">
+				<Image
+					src={src}
+					fill
+					alt={alt}
+					className={`object-cover rounded-lg ${imageClassName}`}
+				/>
+			</div>
 			<p className="text-center text-2xl mt-3 text-skin font-bold">
 				{name}
 			</p>

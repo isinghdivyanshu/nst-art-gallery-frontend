@@ -157,12 +157,22 @@ export default function CreateArt() {
 									</div>
 								</div>
 							) : (
-								<Button
-									className="!bg-light text-dark"
-									type="button"
-									text="Upload"
-									onClick={() => handleClick(styleFileInput)}
-								/>
+								<div className="relative top-0 left-0 flex flex-col gap-5 justify-center p-5">
+										<Button
+											className="!bg-light text-dark"
+											type="button"
+											text="Choose from our styles"
+											onClick={toggleModal}
+										/>
+										<Button
+											className="!bg-light text-dark"
+											type="button"
+											text="Upload Style"
+											onClick={() =>
+												handleClick(styleFileInput)
+											}
+										/>
+								</div>
 							)}
 						</div>
 						<input

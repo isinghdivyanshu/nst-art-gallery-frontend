@@ -2,6 +2,9 @@ import Modal from "react-modal";
 import { ChevronLeft } from "lucide-react";
 import ThemeCard from "../ThemeCard";
 import placeholder from "../../../pictures/placeholder.jpg";
+import { getAllThemes } from "@/services/service";
+import type { Theme } from "@/models/theme";
+import { useEffect, useState } from "react";
 
 interface CallModalProps {
 	modalType?: string;
@@ -61,6 +64,27 @@ function ShowAllArtModal({
 	style,
 	closeTimeoutMS,
 }: ModalProps) {
+	const [themes, setThemes] = useState<Theme[]>([]);
+	const [loading, setLoading] = useState(true);
+	const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+	useEffect(() => {
+		const fetchThemes = async () => {
+			try {
+				const data = await getAllThemes();
+				if (data?.response.themes) {
+					setThemes(data.response.themes);
+				}
+			} catch (error) {
+				console.error("Failed to fetch themes:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		if (isOpen) {
+			fetchThemes();
+		}
+	}, [isOpen]);
 	return (
 		<Modal
 			isOpen={isOpen}
@@ -75,41 +99,29 @@ function ShowAllArtModal({
 			/>
 			<h1 className="text-3xl text-skin text-center">Art Styles</h1>
 			<section className="flex flex-wrap gap-5 justify-center mt-10">
-				<ThemeCard
-					src={placeholder}
-					alt="Placeholder"
-					name="Abstract"
-					containerClassName="hover:scale-105 cursor-pointer"
-					imageClassName="w-60"
-				/>
-				<ThemeCard
-					src={placeholder}
-					alt="Placeholder"
-					name="Abstract"
-					containerClassName="hover:scale-105 cursor-pointer"
-					imageClassName="w-60"
-				/>
-				<ThemeCard
-					src={placeholder}
-					alt="Placeholder"
-					name="Abstract"
-					containerClassName="hover:scale-105 cursor-pointer"
-					imageClassName="w-60"
-				/>
-				<ThemeCard
-					src={placeholder}
-					alt="Placeholder"
-					name="Abstract"
-					containerClassName="hover:scale-105 cursor-pointer"
-					imageClassName="w-60"
-				/>
-				<ThemeCard
-					src={placeholder}
-					alt="Placeholder"
-					name="Abstract"
-					containerClassName="hover:scale-105 cursor-pointer"
-					imageClassName="w-60"
-				/>
+				{loading ? (
+					Array(6).fill(null).map((_, index) => (
+						<ThemeCard
+							key={index}
+							src={placeholder}
+							alt="Loading..."
+							name="Loading..."
+							containerClassName="hover:scale-105 cursor-pointer"
+							imageClassName="w-60"
+						/>
+					))
+				) : (
+					themes.map((theme) => (
+						<ThemeCard
+							key={theme._id}
+							src={`${BASE_URL}${theme.theme_images[0]}`}
+							alt={theme.theme_title}
+							name={theme.theme_title}
+							containerClassName="hover:scale-105 cursor-pointer"
+							imageClassName="w-60"
+						/>
+					))
+				)}
 			</section>
 		</Modal>
 	);

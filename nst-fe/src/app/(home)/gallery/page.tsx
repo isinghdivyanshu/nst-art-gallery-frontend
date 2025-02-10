@@ -5,7 +5,62 @@ import { getAllArts, handleLike } from "@/services/service";
 import { useState, useEffect } from "react";
 import { Art } from "@/models/art";
 import { toast } from "sonner";
+import Link from "next/link";
 
+// Add this component after your ArtCard component
+const NoGlobalArts = () => (
+	<div className="relative min-h-[600px] w-full flex items-center justify-center">
+		<div className="absolute inset-0 grid grid-cols-5 gap-4 p-4 overflow-hidden">
+			{Array(15).fill(null).map((_, index) => (
+				<div
+					key={index}
+					className={`transform transition-all
+			  ${Math.floor(index / 5) === 0 ? 'opacity-30' : ''}
+			  ${Math.floor(index / 5) === 1 ? 'opacity-20' : ''}
+			  ${Math.floor(index / 5) === 2 ? 'opacity-10' : ''}`}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="267"
+						height="264"
+						viewBox="0 0 267 264"
+						fill="none"
+						className="opacity-10"
+					>
+						<g filter="url(#filter0_d_1555_3411)">
+							<rect x="13" width="253.383" height="253.383" fill="#C4C4C4" />
+						</g>
+						<defs>
+							<filter id="filter0_d_1555_3411" x="0.125653" y="0" width="266.257" height="263.228" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+								<feFlood floodOpacity="0" result="BackgroundImageFix" />
+								<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+								<feOffset dx="-9.84509" dy="6.81583" />
+								<feGaussianBlur stdDeviation="1.51463" />
+								<feComposite in2="hardAlpha" operator="out" />
+								<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0" />
+								<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1555_3411" />
+								<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1555_3411" result="shape" />
+							</filter>
+						</defs>
+					</svg>
+				</div>
+			))}
+		</div>
+
+		{/* Content overlay */}
+		<div className="relative z-10 flex flex-col items-center justify-center gap-6 py-20 rounded-2xl p-10">
+			<div className="flex flex-col items-center gap-2">
+				<h4 className="text-xl text-skin font-medium">No Global Arts</h4>
+				<p className="text-light/60 text-center">Be the first to create and share your art with the world</p>
+			</div>
+			<Link href="/create">
+				<button className="inline-flex px-6 py-3 justify-center items-center gap-2.5 rounded-lg bg-soil hover:bg-soil/80 transition-colors">
+					<span className="text-light font-medium">Create Your First Art</span>
+				</button>
+			</Link>
+		</div>
+	</div>
+);
 interface ArtCardProps {
 	style: any;
 	src: StaticImageData | string;
@@ -16,6 +71,7 @@ interface ArtCardProps {
 	onLike: (artId: string) => void;
 	likedByUser: boolean;
 }
+const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
 
 const ArtCard = ({
 	style,
@@ -27,13 +83,14 @@ const ArtCard = ({
 	onLike,
 	likedByUser,
 }: ArtCardProps) => {
+
 	return (
 		<article
 			className="relative bg-mix flex flex-col overflow-auto rounded-lg p-2"
 			style={style}
 		>
 			<Image
-				src={src}
+				src={baseUrl + src}
 				alt={`Art by ${author}`}
 				width={50}
 				height={50}
@@ -99,7 +156,6 @@ export default function Gallery() {
 		};
 	}, []);
 
-	// Update the handleLikeClick function to properly toggle the state
 	const handleLikeClick = async (artSlug: string) => {
 		try {
 			const token = localStorage.getItem('token');
@@ -194,10 +250,42 @@ export default function Gallery() {
 					</h2>
 				</article>
 			</section>
-			<section className="flex gap-2 justify-centers flex-wrap">
-				{images}
-			</section>
-			{loading && <p>Loading...</p>}
+			{loading ? (
+				<section className="flex gap-2 justify-centers flex-wrap">
+					{Array(10).fill(null).map((_, i) => {
+						const { width, height, marginTop } = sizes[i % 5];
+						return (
+							<article
+								key={i}
+								className="relative bg-mix/20 flex flex-col overflow-hidden rounded-lg p-2 animate-pulse"
+								style={{
+									width,
+									height,
+									top: typeof marginTop === "function" ? marginTop(i) : marginTop,
+								}}
+							>
+								<div className="relative w-full h-4/5 rounded-lg bg-mix/30 overflow-hidden">
+									<div className="absolute inset-0 bg-gradient-to-r from-transparent via-soil/10 to-transparent animate-shimmer" />
+								</div>
+								<div className="flex flex-col gap-2 mt-3">
+									<div className="h-4 bg-mix/30 rounded w-3/4" />
+									<div className="h-4 bg-mix/30 rounded w-1/2" />
+									<div className="flex justify-between items-center mt-2">
+										<div className="h-4 bg-mix/30 rounded w-1/4" />
+										<div className="h-6 w-6 bg-mix/30 rounded-full" />
+									</div>
+								</div>
+							</article>
+						);
+					})}
+				</section>
+			) : arts.length > 0 ? (
+				<section className="flex gap-2 justify-centers flex-wrap">
+					{images}
+				</section>
+			) : (
+				<NoGlobalArts />
+			)}
 		</main>
 	);
 }

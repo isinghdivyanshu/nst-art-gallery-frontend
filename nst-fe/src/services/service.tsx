@@ -225,6 +225,14 @@ export async function getThemeOfTheDay() {
 	return response;
 }
 
+export async function getAllThemes() {
+	const response = await fetchEndpoint({
+		endPoint: "/theme/",
+		method: "GET",
+	});
+	return response;
+}
+
 
 //-----------PROFILE-----------
 // Get user arts

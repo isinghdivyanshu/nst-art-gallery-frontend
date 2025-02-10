@@ -1,5 +1,7 @@
 "use server";
 
+import { headers } from "next/headers";
+
 //Global fetch function
 interface fetchEndpointProps {
 	endPoint: string;
@@ -8,6 +10,7 @@ interface fetchEndpointProps {
 	addHeader?: { [key: string]: string };
 	reqBody?: object;
 	token?: string | null;
+	formData?: FormData;
 }
 
 export async function fetchEndpoint({
@@ -17,6 +20,7 @@ export async function fetchEndpoint({
 	addHeader,
 	reqBody,
 	token,
+	formData,
 }: fetchEndpointProps) {
 	const baseURL = process.env.BASE_URL || "http://localhost:8000";
 
@@ -30,7 +34,7 @@ export async function fetchEndpoint({
 			"Content-Type": "application/json",
 			Authorization: `Bearer ${token}`,
 		}
-		: { "Content-Type": "application/json" };
+		: formData ? {} : { "Content-Type": "application/json" };
 	headers = {
 		...headers,
 		...addHeader,
@@ -46,6 +50,7 @@ export async function fetchEndpoint({
 			cache: "no-store",
 			body: body,
 		});
+		console.log("[RESPONSE] -->", response);
 
 		if (response.ok) {
 			const res = await response.json();
@@ -56,6 +61,8 @@ export async function fetchEndpoint({
 				status: res.status,
 				message: res.message,
 				likes: res.likes,
+				id: res.id,
+				image: res.image ? res.image : null,
 			};
 		}
 
@@ -181,7 +188,7 @@ export async function handleResetPassword({
 	return reset;
 }
 
-// Gallery
+//-----------GALLERY-----------
 // Get all arts
 export async function getAllArts(page: number = 1) {
 	const response: any = await fetchEndpoint({
@@ -191,14 +198,108 @@ export async function getAllArts(page: number = 1) {
 	return response;
 }
 
-// Likes
 // Like an art
 interface handleLikeProps {
 	artSlug: string;
 }
-export async function handleLike({ artSlug}: handleLikeProps, token: string) {
+export async function handleLike({ artSlug }: handleLikeProps, token: string) {
 	const response = await fetchEndpoint({
-		endPoint: `/art/${artSlug}`,
+		endPoint: `/art/like/${artSlug}`,
+		method: "POST",
+		auth: true,
+		token: token,
+	});
+
+	return response;
+}
+
+
+//-----------THEME-----------
+// Get theme of the day
+export async function getThemeOfTheDay() {
+	const response = await fetchEndpoint({
+		endPoint: "/theme/theme-of-day",
+		method: "GET",
+	});
+	console.log("THEME OF THE DAY =>", response);
+	return response;
+}
+
+
+//-----------PROFILE-----------
+// Get user arts
+export async function getAllUserArts(id: string) {
+	const response = fetchEndpoint({
+		endPoint: `/art/user/${id}`,
+		method: "GET",
+	});
+
+	return response;
+}
+
+// Delete an art
+interface deleteArtProps {
+	artSlug: string;
+}
+export async function deleteArt({ artSlug }: deleteArtProps, token: string) {
+	const response = await fetchEndpoint({
+		endPoint: `/art/delete/${artSlug}`,
+		method: "DELETE",
+		auth: true,
+		token: token,
+	});
+
+	return response;
+}
+
+// // Add/Make an art
+interface handleStyliseProps {
+	token: string | null;
+	content_image: string;
+	style_image: string;
+}
+export async function createArt({ token, content_image, style_image }: handleStyliseProps) {
+	const response = await fetchEndpoint({
+		endPoint: `/art/model`,
+		method: "POST",
+		auth: true,
+		token: token,
+		reqBody: {
+			"content_image": content_image,
+			"style_image": style_image
+		}
+	});
+	return response;
+}
+
+// -----------PUBLISH-----------
+// Publish an art
+interface SaveArtProps {
+	token: string;
+	image: string;
+	theme: string;
+	title: string;
+	description: string;
+}
+
+export async function saveArt({ token, theme,image,title,description }: SaveArtProps) {
+	return await fetchEndpoint({
+		endPoint: `/art/create`,
+		method: "POST",
+		auth: true,
+		token,
+		reqBody: {
+			"theme": theme,
+			"image": image,
+			"title": title,
+			"description": description,
+		},
+	});
+}
+
+export async function publishArt(token: string, artSlug: string) {
+	const response = await fetchEndpoint({
+		endPoint: `/art/publish/${artSlug}`,
 		method: "POST",
 		auth: true,
 		token: token,

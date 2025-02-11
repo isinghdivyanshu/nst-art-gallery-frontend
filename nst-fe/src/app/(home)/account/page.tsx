@@ -70,10 +70,11 @@ const NoArtState = () => (
 export default function Account() {
 	const [arts, setArts] = useState<Art[]>([]);
 	const [loading, setLoading] = useState(true);
-	const name = localStorage.getItem("name");
+	const [name,setName] = useState("User");
 	useEffect(() => {
 		const fetchArts = async () => {
 			setLoading(true);
+			const name=localStorage.getItem("name");
 			try {
 				const id = localStorage.getItem("id");
 				if (!id) {
@@ -83,6 +84,7 @@ export default function Account() {
 				if (data?.response.arts) {
 					const serializedArts = data?.response.arts;
 					setArts(serializedArts);
+					setName(name ? name : "User");
 				}
 
 

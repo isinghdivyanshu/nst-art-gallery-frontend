@@ -188,25 +188,29 @@ export default function Gallery() {
 	const images = [];
 	const sizes = [
 		{
-			width: "18vw",
+			width: "15vw",
 			height: "50vh",
-			marginTop: (i: number) => `-${Math.floor(i / 5) * y}vh`,
-		},
-		{
-			width: "13vw",
-			height: "60vh",
-			marginTop: (i: number) => `-${Math.floor(i / 5) * x}vh`,
-		},
-		{ width: "25vw", height: "70vh", marginTop: "0vh" },
-		{
-			width: "13vw",
-			height: "60vh",
-			marginTop: (i: number) => `-${Math.floor(i / 5) * x}vh`,
+			marginTop: (i: number) => `-${Math.floor(i / 5) * 15}vh`,
 		},
 		{
 			width: "18vw",
+			height: "55vh",
+			marginTop: (i: number) => `-${Math.floor(i / 5) * 10}vh`,
+		},
+		{
+			width: "20vw",
+			height: "65vh",
+			marginTop: "0vh"
+		},
+		{
+			width: "18vw",
+			height: "53vh",
+			marginTop: (i: number) => `-${Math.floor(i / 5) * 12}vh`,
+		},
+		{
+			width: "15vw",
 			height: "50vh",
-			marginTop: (i: number) => `-${Math.floor(i / 5) * y}vh`,
+			marginTop: (i: number) => `-${Math.floor(i / 5) * 15}vh`,
 		},
 	];
 

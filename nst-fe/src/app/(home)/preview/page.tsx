@@ -146,107 +146,109 @@ export default function Preview() {
 
 
     return (
-        <main className="min-h-[calc(100svh-4.25rem)] w-screen bg-dark">
-            <section className="flex flex-col lg:flex-row gap-20 items-start p-16 xl:p-28">
-                <article className="flex flex-col justify-center lg:items-start w-2/3 gap-8">
-                    <div className="border border-soil flex justify-center items-center overflow-hidden p-2">
-                        <div className="relative w-full h-full">
-                            <Image
-                                src={URL.createObjectURL(new Blob([stylizedImage]))}
-                                alt="Stylized Art"
-                                width={0}
-                                height={0}
-                                className="object-contain w-full h-auto"
-                                priority
-                            />
+        <main className="min-h-[calc(100svh-4.25rem)] w-full bg-[url('../assets/hero/heroBg.svg')] bg-cover bg-center">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+                <section className="flex flex-col lg:flex-row gap-10 xl:gap-20">
+                    <article className="flex flex-col justify-center lg:items-start w-2/3 gap-8">
+                        <div className="border border-soil flex justify-center items-center overflow-hidden p-2">
+                            <div className="relative w-full h-full">
+                                <Image
+                                    src={URL.createObjectURL(new Blob([stylizedImage]))}
+                                    alt="Stylized Art"
+                                    width={0}
+                                    height={0}
+                                    className="object-contain w-full h-auto"
+                                    priority
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <div className="w-full flex flex-col gap-4">
-                        <label htmlFor="artName" className="text-light text-2xl font-medium">
-                            Name
-                        </label>
-                        <input
-                            type="text"
-                            value={artName}
-                            onChange={(e) => setArtName(e.target.value)}
-                            placeholder="Enter art name..."
-                            className="bg-mix text-light p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-soil"
+                        <div className="w-full flex flex-col gap-4">
+                            <label htmlFor="artName" className="text-light text-2xl font-medium">
+                                Name
+                            </label>
+                            <input
+                                type="text"
+                                value={artName}
+                                onChange={(e) => setArtName(e.target.value)}
+                                placeholder="Enter art name..."
+                                className="bg-mix text-light p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-soil"
+                            />
+                            <div className="w-full flex flex-col gap-6">
+                                <label htmlFor="artTheme" className="text-light text-2xl font-medium">
+                                    Theme
+                                </label>
+                                <select
+                                    id="artTheme"
+                                    value={artTheme}
+                                    onChange={(e) => setArtTheme(e.target.value)}
+                                    className="bg-mix text-light p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-soil appearance-none cursor-pointer"
+                                >
+                                    <option value="" disabled>Select a theme...</option>
+                                    {PREDEFINED_THEMES.map((theme) => (
+                                        <option key={theme} value={theme} className="bg-dark">
+                                            {theme}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="artDescription" className="text-light text-2xl font-medium">
+                                    Description
+                                </label>
+                                <textarea
+                                    id="artDescription"
+                                    value={artDescription}
+                                    onChange={(e) => setArtDescription(e.target.value)}
+                                    placeholder="Enter art description..."
+                                    rows={4}
+                                    className="bg-mix text-light p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-soil resize-none"
+                                />
+                            </div>
+                            <div className="relative group">
+                                <Button
+                                    type="button"
+                                    text={isPending ? "Saving..." : "Save"}
+                                    onClick={saveArtName}
+                                    disabled={isPending || !artName || !artTheme || !artDescription}
+                                    className="font-medium text-light bg-soil px-14 w-full"
+                                />
+                                <QuestionMarkCircleIcon className="w-5 h-5 text-dark absolute right-3 top-1/2 -translate-y-1/2" />
+                                <div className="absolute invisible group-hover:visible border border-soil bg-dark text-soil p-2 rounded-md text-sm top-14 right-0 whitespace-nowrap">
+                                    Save your art in your private collection
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article className="flex flex-col justify-start lg:items-start gap-6">
+                        <Button
+                            type="button"
+                            text="Download"
+                            onClick={handleDownload}
+                            className="font-medium text-light bg-soil px-14 w-full h-12"
                         />
-                        <div className="w-full flex flex-col gap-6">
-                            <label htmlFor="artTheme" className="text-light text-2xl font-medium">
-                                Theme
-                            </label>
-                            <select
-                                id="artTheme"
-                                value={artTheme}
-                                onChange={(e) => setArtTheme(e.target.value)}
-                                className="bg-mix text-light p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-soil appearance-none cursor-pointer"
-                            >
-                                <option value="" disabled>Select a theme...</option>
-                                {PREDEFINED_THEMES.map((theme) => (
-                                    <option key={theme} value={theme} className="bg-dark">
-                                        {theme}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="artDescription" className="text-light text-2xl font-medium">
-                                Description
-                            </label>
-                            <textarea
-                                id="artDescription"
-                                value={artDescription}
-                                onChange={(e) => setArtDescription(e.target.value)}
-                                placeholder="Enter art description..."
-                                rows={4}
-                                className="bg-mix text-light p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-soil resize-none"
-                            />
-                        </div>
+                        <Button
+                            type="button"
+                            text="Share"
+                            onClick={handleShare}
+                            className="font-medium text-dark bg-light px-14 w-full h-12"
+                        />
                         <div className="relative group">
                             <Button
                                 type="button"
-                                text={isPending ? "Saving..." : "Save"}
-                                onClick={saveArtName}
-                                disabled={isPending || !artName || !artTheme || !artDescription}
-                                className="font-medium text-light bg-soil px-14 w-full"
+                                text="Publish"
+                                onClick={handlePublish}
+                                disabled={!artSlug}
+                                className="font-medium text-dark bg-skin w-80 px-14 h-12"
                             />
                             <QuestionMarkCircleIcon className="w-5 h-5 text-dark absolute right-3 top-1/2 -translate-y-1/2" />
                             <div className="absolute invisible group-hover:visible border border-soil bg-dark text-soil p-2 rounded-md text-sm top-14 right-0 whitespace-nowrap">
-                                Save your art in your private collection
+                                Publish your art in our art gallery and have it showcased!
                             </div>
                         </div>
-                    </div>
-                </article>
-
-                <article className="flex flex-col justify-start lg:items-start gap-6">
-                    <Button
-                        type="button"
-                        text="Download"
-                        onClick={handleDownload}
-                        className="font-medium text-light bg-soil px-14 w-full h-12"
-                    />
-                    <Button
-                        type="button"
-                        text="Share"
-                        onClick={handleShare}
-                        className="font-medium text-dark bg-light px-14 w-full h-12"
-                    />
-                    <div className="relative group">
-                        <Button
-                            type="button"
-                            text="Publish"
-                            onClick={handlePublish}
-                            disabled={!artSlug}
-                            className="font-medium text-dark bg-skin w-80 px-14 h-12"
-                        />
-                        <QuestionMarkCircleIcon className="w-5 h-5 text-dark absolute right-3 top-1/2 -translate-y-1/2" />
-                        <div className="absolute invisible group-hover:visible border border-soil bg-dark text-soil p-2 rounded-md text-sm top-14 right-0 whitespace-nowrap">
-                            Publish your art in our art gallery and have it showcased!
-                        </div>
-                    </div>
-                </article>
-            </section>
+                    </article>
+                </section>
+            </div>
         </main>
     );
 };

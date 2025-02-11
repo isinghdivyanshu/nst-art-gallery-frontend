@@ -8,7 +8,7 @@ import ContextProvider from "@/providers/contextProvider";
 const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "Art Gallery",
+	title: "Artium",
 	description: "A place for stylizing your art and images",
 };
 

@@ -1,8 +1,7 @@
-"use server";
+"use client";
 
-import { headers } from "next/headers";
+import { config } from '@/config/config';
 
-//Global fetch function
 interface fetchEndpointProps {
 	endPoint: string;
 	method: "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
@@ -10,7 +9,6 @@ interface fetchEndpointProps {
 	addHeader?: { [key: string]: string };
 	reqBody?: object;
 	token?: string | null;
-	formData?: FormData;
 }
 
 export async function fetchEndpoint({
@@ -20,11 +18,8 @@ export async function fetchEndpoint({
 	addHeader,
 	reqBody,
 	token,
-	formData,
 }: fetchEndpointProps) {
-	const baseURL = process.env.BASE_URL || "http://localhost:8000";
-
-	const URL = `${baseURL}${endPoint}`;
+	const URL = `${config.baseUrl}${endPoint}`;
 	console.clear();
 	console.log("\n\n[URL] -->", URL);
 	console.log("[TIME] -->", new Date().toLocaleTimeString());
@@ -34,7 +29,7 @@ export async function fetchEndpoint({
 			"Content-Type": "application/json",
 			Authorization: `Bearer ${token}`,
 		}
-		: formData ? {} : { "Content-Type": "application/json" };
+		: { "Content-Type": "application/json" };
 	headers = {
 		...headers,
 		...addHeader,
@@ -290,7 +285,7 @@ interface SaveArtProps {
 	description: string;
 }
 
-export async function saveArt({ token, theme,image,title,description }: SaveArtProps) {
+export async function saveArt({ token, theme, image, title, description }: SaveArtProps) {
 	return await fetchEndpoint({
 		endPoint: `/art/create`,
 		method: "POST",

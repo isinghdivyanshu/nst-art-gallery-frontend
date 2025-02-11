@@ -5,6 +5,7 @@ import placeholder from "../../../pictures/placeholder.jpg";
 import { getAllThemes } from "@/services/service";
 import type { Theme } from "@/models/theme";
 import { useEffect, useState } from "react";
+import { config } from "@/config/config";
 
 interface CallModalProps {
 	modalType?: string;
@@ -66,7 +67,7 @@ function ShowAllArtModal({
 }: ModalProps) {
 	const [themes, setThemes] = useState<Theme[]>([]);
 	const [loading, setLoading] = useState(true);
-	const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+	const BASE_URL = config.baseUrl || 'http://localhost:8000';
 	useEffect(() => {
 		const fetchThemes = async () => {
 			try {

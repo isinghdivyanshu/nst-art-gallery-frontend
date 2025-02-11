@@ -6,11 +6,12 @@ import { useState, useEffect } from "react";
 import { getAllThemes, getThemeOfTheDay } from "@/services/service";
 import type { Theme } from "@/models/theme";
 import { toast } from "sonner";
+import {config} from "@/config/config";
 
 export default function Theme() {
 	const [theme, setTheme] = useState<Theme | null>(null);
 	const [loading, setLoading] = useState(true);
-	const BASE_URL = 'http://localhost:8000';
+	const BASE_URL = config.baseUrl || 'http://localhost:8000';
 	const [themes, setThemes] = useState<Theme[]>([]);
 
 	useEffect(() => {

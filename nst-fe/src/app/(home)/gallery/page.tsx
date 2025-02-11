@@ -6,6 +6,9 @@ import { useState, useEffect } from "react";
 import { Art } from "@/models/art";
 import { toast } from "sonner";
 import Link from "next/link";
+import { config } from "@/config/config";
+
+const baseUrl = config.baseUrl || 'http://localhost:8000';
 
 // Add this component after your ArtCard component
 const NoGlobalArts = () => (
@@ -71,7 +74,6 @@ interface ArtCardProps {
 	onLike: (artId: string) => void;
 	likedByUser: boolean;
 }
-const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
 
 const ArtCard = ({
 	style,
@@ -90,7 +92,7 @@ const ArtCard = ({
 			style={style}
 		>
 			<Image
-				src={baseUrl + src}
+				src={typeof src === 'string' ? baseUrl + src : src}
 				alt={`Art by ${author}`}
 				width={50}
 				height={50}

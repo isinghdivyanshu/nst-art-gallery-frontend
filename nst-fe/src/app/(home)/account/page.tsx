@@ -7,8 +7,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Art } from "@/models/art";
 import { getAllUserArts } from "@/services/service";
+import { config } from "@/config/config";
 
-const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
+const baseUrl = config.baseUrl || 'http://localhost:8000';
 const BoxSvg = () => (
 	<svg
 		xmlns="http://www.w3.org/2000/svg"

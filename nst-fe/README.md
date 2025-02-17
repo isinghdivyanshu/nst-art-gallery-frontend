@@ -35,7 +35,7 @@
 		<td>
 		Divyanshu Singh
 		<p align="center">
-			<img src = "" width="150" height="150">
+			<img src = "https://avatars.githubusercontent.com/u/109350558?v=4" width="150" height="150">
 		</p>
 			<p align="center">
 				<a href = "https://github.com/isinghdivyanshu">
@@ -49,7 +49,7 @@
 		<td>
 		Dev Keshwani
 		<p align="center">
-			<img src = "https://avatars.githubusercontent.com/u/74227363?v=4" width="150" height="150">
+			<img src = "https://avatars.githubusercontent.com/u/84137299?v=4" width="150" height="150">
 		</p>
 			<p align="center">
 				<a href = "https://github.com/dk-a-dev">

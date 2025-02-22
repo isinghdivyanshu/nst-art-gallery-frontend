@@ -14,4 +14,5 @@ export interface Art {
 	createdAt: string;
 	published: boolean;
 	likedByUser: boolean;
+	reviewed: boolean;
 }

@@ -8,6 +8,12 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
+        protocol: 'http',
+        hostname: 'localhost',
+        pathname: '/**',
+        port: '8000',
+      },
+      {
         protocol: 'https',
         hostname: 'artium.rupaaksrinivas.tech',
         pathname: '/**',

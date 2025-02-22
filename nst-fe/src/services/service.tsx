@@ -185,9 +185,9 @@ export async function handleResetPassword({
 
 //-----------GALLERY-----------
 // Get all arts
-export async function getAllArts(page: number = 1) {
+export async function getAllArts(page: number = 1,limit :number=15) {
 	const response: any = await fetchEndpoint({
-		endPoint: `/art/gallery?page=${page}`,
+		endPoint: `/art/gallery?page=${page}&limit=${limit}`,
 		method: "GET",
 	});
 	return response;
@@ -231,9 +231,9 @@ export async function getAllThemes() {
 
 //-----------PROFILE-----------
 // Get user arts
-export async function getAllUserArts(id: string) {
+export async function getAllUserArts(id: string, page: number=1, limit: number=10) {
 	const response = fetchEndpoint({
-		endPoint: `/art/user/${id}`,
+		endPoint: `/art/user/${id}?page=${page}&limit=${limit}`,
 		method: "GET",
 	});
 
@@ -246,7 +246,7 @@ interface deleteArtProps {
 }
 export async function deleteArt({ artSlug }: deleteArtProps, token: string) {
 	const response = await fetchEndpoint({
-		endPoint: `/art/delete/${artSlug}`,
+		endPoint: `/art/${artSlug}`,
 		method: "DELETE",
 		auth: true,
 		token: token,
@@ -255,7 +255,7 @@ export async function deleteArt({ artSlug }: deleteArtProps, token: string) {
 	return response;
 }
 
-// // Add/Make an art
+// Add/Make an art
 interface handleStyliseProps {
 	token: string | null;
 	content_image: string;

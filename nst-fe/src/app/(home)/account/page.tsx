@@ -4,10 +4,12 @@ import placeholder from "../../../../pictures/placeholder.jpg";
 import SignOutButton from "@/components/account/signOutButton";
 import ViewSomething from "@/components/ViewSomething";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Art } from "@/models/art";
-import { getAllUserArts } from "@/services/service";
+import { getAllUserArts, deleteArt, publishArt } from "@/services/service";
 import { config } from "@/config/config";
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import { toast } from "sonner";
 
 const baseUrl = config.baseUrl || 'http://localhost:8000';
 const BoxSvg = () => (
@@ -53,7 +55,6 @@ const NoArtState = () => (
 			))}
 		</div>
 
-		{/* Content overlay */}
 		<div className="relative z-10 flex flex-col items-center justify-center gap-6 py-20 rounded-2xl p-10">
 			<div className="flex flex-col items-center gap-2">
 				<h3 className="text-xl text-skin font-medium">No Art Currently</h3>
@@ -71,39 +72,67 @@ const NoArtState = () => (
 export default function Account() {
 	const [arts, setArts] = useState<Art[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [name,setName] = useState("User");
-	useEffect(() => {
-		const fetchArts = async () => {
-			setLoading(true);
-			const name=localStorage.getItem("name");
-			try {
-				const id = localStorage.getItem("id");
-				if (!id) {
-					throw new Error("Unable to fetch user arts");
-				}
-				const data = await getAllUserArts(id);
-				if (data?.response.arts) {
-					const serializedArts = data?.response.arts;
-					setArts(serializedArts);
-					setName(name ? name : "User");
-				}
+	const [name, setName] = useState("User");
+	const [page, setPage] = useState(1);
+	const [hasMore, setHasMore] = useState(true);
+	const loadingMore = useRef(false);
 
+	const fetchArts = async (pageNum: number) => {
+		if (loadingMore.current) return;
+		loadingMore.current = true;
 
-			} catch (error) {
-				console.log("Failed to fetch arts:", error);
-			} finally {
-				setLoading(false);
+		try {
+			const id = localStorage.getItem("id");
+			if (!id) {
+				throw new Error("Unable to fetch user arts");
 			}
-		};
+			const data = await getAllUserArts(id, pageNum, 10);
+			if (data?.response.arts) {
+				const serializedArts = data?.response.arts;
 
-		let isMounted = true;
-		if (isMounted) {
-			fetchArts();
+				if (pageNum === 1) {
+					setArts(serializedArts);
+				} else {
+					setArts(prev => [...prev, ...serializedArts]);
+				}
+
+				setHasMore(serializedArts.length === 10);
+
+				const name = localStorage.getItem("name");
+				setName(name ? name : "User");
+			}
+		} catch (error) {
+			console.log("Failed to fetch arts:", error);
+		} finally {
+			setLoading(false);
+			loadingMore.current = false;
 		}
-		return () => {
-			isMounted = false;
-		};
+	};
+
+	useEffect(() => {
+		fetchArts(1);
 	}, []);
+
+	const handleScroll = useCallback(() => {
+		if (loadingMore.current || !hasMore) return;
+
+		const scrollPosition = window.innerHeight + window.scrollY;
+		const documentHeight = document.documentElement.offsetHeight;
+
+		if (scrollPosition >= documentHeight * 0.8) {
+			setPage(prev => prev + 1);
+			fetchArts(page + 1);
+		}
+	}, [hasMore, page]);
+
+	useEffect(() => {
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, [handleScroll]);
+
+	const handleDeleteArt = (deletedArtId: string) => {
+		setArts(prevArts => prevArts.filter(art => art.slug !== deletedArtId));
+	};
 
 	if (loading) {
 		return (
@@ -155,15 +184,29 @@ export default function Account() {
 				<h1 className="text-3xl text-light mb-5">Previous Art</h1>
 				<section className="flex flex-wrap gap-4 items-start justify-center">
 					{arts.length > 0 ? (
-						arts.map((art) => (
-							<ArtCard
-								key={art._id}
-								src={art.image || placeholder}
-								desc={art.description}
-								likes={art.likes}
-								artSlug={art.slug}
-							/>
-						))
+						<>
+							{arts.map((art) => (
+								<ArtCard
+									key={art._id}
+									src={art.image || placeholder}
+									desc={art.description}
+									likes={art.likes}
+									artSlug={art.slug}
+									onDelete={() => handleDeleteArt(art.slug)}
+									reviewed={art.reviewed} // Add this prop
+								/>
+							))}
+							{loadingMore.current && (
+								<div className="w-full flex justify-center my-4">
+									<div className="animate-spin rounded-full h-8 w-8 border-t-2 border-soil"></div>
+								</div>
+							)}
+							{!hasMore && (
+								<div className="w-full text-center text-light/60 my-4">
+									No more arts to load
+								</div>
+							)}
+						</>
 					) : (
 						<NoArtState />
 					)}
@@ -186,11 +229,93 @@ interface ArtCardProps {
 	desc: string;
 	likes: number;
 	artSlug: string;
+	onDelete?: () => void;
+	reviewed?: boolean;
 }
 
-function ArtCard({ src, desc, likes, artSlug }: ArtCardProps) {
+function ArtCard({ src, desc, likes, artSlug, onDelete, reviewed }: ArtCardProps) {
+	const [showDropdown, setShowDropdown] = useState(false);
+
+	const handlePublish = async () => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			toast.error("Please login to publish art");
+			return;
+		}
+
+		try {
+			const response = await publishArt(token, artSlug);
+			if (response?.status === "success") {
+				toast.success("Art submitted for review!");
+			} else {
+				toast.error(response?.message || "Failed to publish art");
+			}
+		} catch (error) {
+			console.error("Error publishing art:", error);
+			toast.error("Failed to publish art");
+		}
+		setShowDropdown(false);
+	};
+
+	const handleDelete = async () => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			toast.error("Please login to delete art");
+			return;
+		}
+
+		try {
+			const response = await deleteArt({ artSlug }, token);
+			if (response?.status === "success") {
+				toast.success("Art deleted successfully!");
+				onDelete?.();
+			} else {
+				toast.error(response?.message || "Failed to delete art");
+			}
+		} catch (error) {
+			console.error("Error deleting art:", error);
+			toast.error("Failed to delete art");
+		}
+		setShowDropdown(false);
+	};
+
 	return (
-		<article className="relative bg-mix p-2 flex flex-col w-[280px] overflow-hidden rounded-lg">
+		<article className="relative bg-mix p-2 flex flex-col w-[280px] overflow-hidden rounded-lg group">
+			{reviewed && (
+				<div className="absolute top-4 left-4 z-10 bg-soil/80 px-2 py-1 rounded text-xs text-light">
+					Published
+				</div>
+			)}
+			<div className="absolute top-4 right-4 z-10">
+				<button 
+					onClick={() => setShowDropdown(!showDropdown)}
+					className="p-1 rounded-full bg-dark/50 hover:bg-dark/75 transition-colors"
+				>
+					<EllipsisVerticalIcon className="w-6 h-6 text-light" />
+				</button>
+				{showDropdown && (
+					<div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-dark ring-1 ring-black ring-opacity-5">
+						<div className="py-1" role="menu">
+							{!reviewed && (
+								<button
+									onClick={handlePublish}
+									className="w-full px-4 py-2 text-sm text-light hover:bg-mix/50 text-left"
+									role="menuitem"
+								>
+									Publish
+								</button>
+							)}
+							<button
+								onClick={handleDelete}
+								className="w-full px-4 py-2 text-sm text-red-500 hover:bg-mix/50 text-left"
+								role="menuitem"
+							>
+								Delete
+							</button>
+						</div>
+					</div>
+				)}
+			</div>
 			<div className="relative w-full aspect-square overflow-hidden rounded-lg">
 				<Image
 					src={baseUrl + src}

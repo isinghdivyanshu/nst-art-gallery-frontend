@@ -178,3 +178,16 @@ html {
 	-moz-box-shadow: inset 0px -20px 18px -24px rgba(0, 0, 0, 0.75);
 	box-shadow: inset 0px -20px 18px -24px rgba(0, 0, 0, 0.75);
 }
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.animate-shimmer {
+    animation: shimmer 2s infinite;
+}

@@ -169,14 +169,15 @@ export default function Theme() {
 								? theme.theme_description
 								: "Surrealism is an art and cultural movement that developed in Europe in the aftermath of World War I in which artists aimed to allow the unconscious mind to express itself, often resulting in the depiction of illogical or dreamlike scenes and ideas. Its intention was, according to leader André Breton, to \"resolve the previously contradictory conditions of dream and reality into an absolute reality, a super-reality\", or surreality."}
 						</p>
-						<p className="w-full px-10 mt-5">
+						<p className="w-full px-10 mt-5 flex items-center gap-2">
 							Learn more:
 							<a
-								href="theme?.info_link"
+								href={theme?.info_link || `https://www.wikipedia.com/wiki/${theme?.theme_title || 'Surrealism'}`}
 								target="_blank"
-								className="text-blue-500"
+								rel="noopener noreferrer"
+								className="text-blue-500 hover:underline"
 							>
-								{theme?.info_link ?? "https://www.wikipedia.com/{theme.name}"}
+								{theme?.info_link || `https://www.wikipedia.com/wiki/${theme?.theme_title || 'Surrealism'}`}
 							</a>
 						</p>
 						<h2 className="mt-32 text-4xl mb-5">

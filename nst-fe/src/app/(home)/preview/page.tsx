@@ -8,9 +8,6 @@ import { toast } from "sonner";
 import { publishArt, saveArt } from "@/services/service";
 import { useArtStore } from "@/store/ArtStore";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
-import v1 from "../../../../pictures/v1.svg";
-import v2 from "../../../../pictures/v2.svg";
-import v3 from "../../../../pictures/v3.svg";
 
 const PREDEFINED_THEMES = [
     "Retro Pop",
@@ -18,7 +15,12 @@ const PREDEFINED_THEMES = [
     "Surrealism",
     "Impressionism",
     "Cubism",
-    "Post Impression"
+    "Post Impression",
+    "Abstractionism",
+    "Ukiyo-e",
+    "Modern Indian",
+    "Baroque",
+    "Symbolism",
 ] as const;
 export default function Preview() {
     const router = useRouter();
@@ -88,7 +90,7 @@ export default function Preview() {
         try {
             const response = await publishArt(token, artSlug);
             if (response?.status === "success") {
-                toast.success("Art published successfully!");
+                toast.success("Art submitted for review!");
             } else {
                 toast.error(response?.message || "Failed to publish art");
             }

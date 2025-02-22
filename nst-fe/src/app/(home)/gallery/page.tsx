@@ -2,7 +2,7 @@
 import Image, { StaticImageData } from "next/image";
 import placeholder from "../../../../pictures/placeholder.jpg";
 import { getAllArts, handleLike } from "@/services/service";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Art } from "@/models/art";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -10,7 +10,7 @@ import { config } from "@/config/config";
 
 const baseUrl = config.baseUrl || 'http://localhost:8000';
 
-// Add this component after your ArtCard component
+
 const NoGlobalArts = () => (
 	<div className="relative min-h-[600px] w-full flex items-center justify-center">
 		<div className="absolute inset-0 grid grid-cols-5 gap-4 p-4 overflow-hidden">
@@ -50,7 +50,6 @@ const NoGlobalArts = () => (
 			))}
 		</div>
 
-		{/* Content overlay */}
 		<div className="relative z-10 flex flex-col items-center justify-center gap-6 py-20 rounded-2xl p-10">
 			<div className="flex flex-col items-center gap-2">
 				<h4 className="text-xl text-skin font-medium">No Global Arts</h4>
@@ -129,34 +128,59 @@ const ArtCard = ({
 export default function Gallery() {
 	const [arts, setArts] = useState<Art[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [page, setPage] = useState(1);
+	const [hasMore, setHasMore] = useState(true);
+	const loadingMore = useRef(false);
+
+	const fetchArts = async (pageNum: number) => {
+		if (loadingMore.current) return;
+		loadingMore.current = true;
+
+		try {
+			const data = await getAllArts(pageNum, 15);
+			if (data?.response.arts) {
+				const serializedArts = data.response.arts.map((art: { likedByUser: any; }) => ({
+					...art,
+					likedByUser: Boolean(art.likedByUser)
+				}));
+
+				if (pageNum === 1) {
+					setArts(serializedArts);
+				} else {
+					setArts(prev => [...prev, ...serializedArts]);
+				}
+
+				setHasMore(serializedArts.length === 15);
+			}
+		} catch (error) {
+			console.log("Failed to fetch arts:", error);
+			toast.error("Failed to fetch arts");
+		} finally {
+			setLoading(false);
+			loadingMore.current = false;
+		}
+	};
 
 	useEffect(() => {
-		const fetchArts = async () => {
-			try {
-				const data = await getAllArts();
-				if (data?.response.arts) {
-					const serializedArts = data.response.arts.map((art: { likedByUser: any; }) => ({
-						...art,
-						likedByUser: Boolean(art.likedByUser) // Ensure boolean value
-					}));
-					setArts(serializedArts);
-				}
-			} catch (error) {
-				console.log("Failed to fetch arts:", error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		setLoading(true);
-		let isMounted = true;
-		if (isMounted) {
-			fetchArts();
-		}
-		return () => {
-			isMounted = false;
-		};
+		fetchArts(1);
 	}, []);
+
+	const handleScroll = useCallback(() => {
+		if (loadingMore.current || !hasMore) return;
+
+		const scrollPosition = window.innerHeight + window.scrollY;
+		const documentHeight = document.documentElement.offsetHeight;
+
+		if (scrollPosition >= documentHeight * 0.8) {
+			setPage(prev => prev + 1);
+			fetchArts(page + 1);
+		}
+	}, [hasMore, page]);
+
+	useEffect(() => {
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, [handleScroll]);
 
 	const handleLikeClick = async (artSlug: string) => {
 		try {
@@ -174,7 +198,7 @@ export default function Gallery() {
 							? {
 								...art,
 								likes: art.likes + (response.likes ? 1 : -1),
-								likedByUser: !art.likedByUser // Toggle the liked state
+								likedByUser: !art.likedByUser
 							}
 							: art
 					)
@@ -256,7 +280,7 @@ export default function Gallery() {
 					</h2>
 				</article>
 			</section>
-			{loading ? (
+			{loading && page === 1 ? (
 				<section className="flex gap-2 justify-centers flex-wrap">
 					{Array(10).fill(null).map((_, i) => {
 						const { width, height, marginTop } = sizes[i % 5];
@@ -286,9 +310,25 @@ export default function Gallery() {
 					})}
 				</section>
 			) : arts.length > 0 ? (
-				<section className="flex gap-2 justify-centers flex-wrap">
-					{images}
-				</section>
+				<>
+					<section className="flex gap-2 justify-centers flex-wrap">
+						{images}
+					</section>
+
+					{/* Loading more indicator */}
+					{loadingMore.current && (
+						<div className="w-full h-48 relative overflow-hidden bg-mix/20 rounded-lg mt-8">
+							<div className="absolute inset-0 bg-gradient-to-r from-transparent via-soil/10 to-transparent animate-shimmer" />
+						</div>
+					)}
+
+					{/* No more arts message */}
+					{!hasMore && arts.length > 0 && (
+						<div className="text-center text-light/60 mt-8 pb-4">
+							No more arts to load
+						</div>
+					)}
+				</>
 			) : (
 				<NoGlobalArts />
 			)}

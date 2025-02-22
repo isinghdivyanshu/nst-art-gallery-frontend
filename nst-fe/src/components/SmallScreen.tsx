@@ -11,9 +11,9 @@ export default function SmallScreen() {
 				<article className="absolute bottom-0 flex flex-col gap-36 h-4/5 w-full items-center pt-48 px-5">
 					<section className="text-skin text-xl">
 						<p className="mb-5">
-							This is best experienced on the app
+							Artium is best experienced on the app
 						</p>
-						<p>Download Now</p>
+						<p>Coming Soon!</p>
 					</section>
 					<section className="w-1/2 h-full">
 						<Image
@@ -30,9 +30,9 @@ export default function SmallScreen() {
 				<article className="flex gap-10 items-center h-full">
 					<section className="w-1/2 h-1/2 text-3xl text-skin">
 						<p className="mb-14">
-							This is best experienced on the app
+							Artium is best experienced on the app
 						</p>
-						<p>Download Now</p>
+						<p>Coming Soon!</p>
 					</section>
 					<section className="w-1/2 h-1/2">
 						<Image
